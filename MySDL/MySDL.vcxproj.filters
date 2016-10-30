@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="azEngine.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="azGraph.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="azView.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="azFontMgr.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="azEnv.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="azvLabel.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="azText.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="azTexture.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="azvImage.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="azvButton.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="azvListbox.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="device.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RefObject.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="azTexture.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="azEngine.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="azGraph.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="azView.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="azFontMgr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="azEnv.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="azvLabel.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="azText.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="azvImage.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="azvButton.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="azvListbox.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MySDL.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+  </ItemGroup>
+</Project>

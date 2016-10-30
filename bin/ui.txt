@@ -1,0 +1,32 @@
+[ui]
+size=(640,480)
+pos=(48,32)
+back.tex=bg1.jpg
+
+[Image:img1]
+image=test.bmp
+size=(384, 256)
+
+[Label:label1]
+text.text="hello \n azEngine"
+text.back.color=#00ff007f
+pos=(60, 40)
+size=(180,80)
+
+[Button:btn1]
+text.text=ClickMe
+size=(128,64)
+pos=(0,120)
+
+[Listbox:list1]
+pos=(320,0)
+size=(320,480)
+title.text=LISTBOX1
+title.color=#0000ff
+items= $(s1)
+
+[Strings:s1]
+"Hello World"
+"Hello azEngine"
+"How are you?" 
+"ÄãºÃ£¬ÊÀ½ç"

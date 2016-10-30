@@ -1,0 +1,7 @@
+﻿  main.cpp
+main.cpp(108): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+main.cpp(109): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+  正在生成代码
+  All 197 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  已完成代码的生成
+  MySDL.vcxproj -> D:\c\Projects\MySDL\Release\MySDL.exe
