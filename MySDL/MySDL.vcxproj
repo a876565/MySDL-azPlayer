@@ -97,7 +97,7 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_ttf.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_ttf.lib;SDL2_image.lib;SDL2_mixer.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -121,7 +121,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_ttf.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_ttf.lib;SDL2_image.lib;SDL2_mixer.lib</AdditionalDependencies>
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
     </Link>
@@ -154,7 +154,10 @@
     <ClCompile Include="azvImage.cpp" />
     <ClCompile Include="azvLabel.cpp" />
     <ClCompile Include="azvListbox.cpp" />
+    <ClCompile Include="device.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MyMusic.cpp" />
+    <ClCompile Include="ustr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="azEngine.h" />
@@ -169,6 +172,7 @@
     <ClInclude Include="azvLabel.h" />
     <ClInclude Include="azvListbox.h" />
     <ClInclude Include="device.h" />
+    <ClInclude Include="MyMusic.h" />
     <ClInclude Include="RefObject.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>

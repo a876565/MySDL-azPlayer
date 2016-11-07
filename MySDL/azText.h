@@ -35,6 +35,8 @@ public:
 	// Í¨¹ý azTextBase ¼Ì³Ð
 	virtual int draw(SDL_Rect * target) override;
 	virtual void setText(const std::wstring&s) override;
+	void setText(const std::string&s) { cstows(text, s.c_str()); updateText(); }
+	void updateText();
 	virtual int CalcHeight(int width) override;
 	
 };

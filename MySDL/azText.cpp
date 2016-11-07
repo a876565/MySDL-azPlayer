@@ -63,6 +63,12 @@ int azText::draw(SDL_Rect * target)
 void azText::setText(const std::wstring& s)
 {
 	text = s;
+	updateText();
+}
+
+
+void azText::updateText()
+{
 	tchs.clear();
 	for (wchar_t c : text)
 	{

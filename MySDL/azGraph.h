@@ -10,7 +10,7 @@ class azGraph
 {
 public:
 	azGraph() {};
-	virtual~azGraph() {};
+	virtual~azGraph();
 	virtual void draw(azEngine*e) = 0;
 };
 
@@ -227,23 +227,23 @@ inline void azGroup::clear()
 inline int azGroup::draw_tex(azTexture& tex, SDL_Rect * dst, SDL_Rect * src)
 {
 	list.push_back(new azGraphTex(tex,dst,src));
-	return list.capacity()-1;
+	return list.size()-1;
 }
 
 inline int azGroup::draw_tex2(azTexture& tex, SDL_Rect * dst, SDL_Rect * src, double angle, SDL_Point * center, SDL_RendererFlip flip)
 {
 	list.push_back(new azGraphTex2(tex, dst, src, angle, center, flip));
-	return list.capacity() - 1;
+	return list.size() - 1;
 }
 
 inline int azGroup::draw_rect(SDL_Rect * rect,int type)
 {
 	list.push_back(new azGraphRect(rect,type));
-	return list.capacity() - 1;
+	return list.size() - 1;
 }
 
 inline int azGroup::draw_color(Uint8 r, Uint8 g, Uint8 b, Uint8 a)
 {
 	list.push_back(new azGraphColor(r, g, b, a));
-	return list.capacity() - 1;
+	return list.size() - 1;
 }

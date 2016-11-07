@@ -29,7 +29,7 @@ void azvListbox::draw()
 		y += t.h;
 		i++;
 	}
-	for (; i<items.size();)
+	for (; (size_t)i<items.size();)
 	{
 		auto&t = items[i];
 		r.h = t.h;
@@ -102,12 +102,12 @@ int azvListbox::InsertText(const std::wstring & str, SDL_Color color)
 	lt.text = t;
 	items.push_back(lt);
 	CalcAllHeight();
-	return items.capacity()-1;
+	return items.size()-1;
 }
 
 int azvListbox::SetItemText(size_t index, const std::wstring & str)
 {
-	if (index < items.capacity())
+	if (index < items.size())
 	{
 		auto& it = items[index];
 		it.text->setText(str);
@@ -123,7 +123,7 @@ int azvListbox::SetItemText(size_t index, const std::wstring & str)
 
 int azvListbox::SetItemColor(size_t index,SDL_Color color)
 {
-	if (index < items.capacity())
+	if (index < items.size())
 	{
 		items[index].text->setColor(color);
 	}
@@ -132,7 +132,7 @@ int azvListbox::SetItemColor(size_t index,SDL_Color color)
 
 const std::wstring &  azvListbox::GetItemText(size_t index)
 {
-	if (index < items.capacity())
+	if (index < items.size())
 	{
 		return items[index].text->getText();
 	}
@@ -141,7 +141,7 @@ const std::wstring &  azvListbox::GetItemText(size_t index)
 
 SDL_Color azvListbox::GetItemColor(size_t index)
 {
-	if (index < items.capacity())
+	if (index < items.size())
 	{
 		return items[index].text->getColor();
 	}
@@ -150,7 +150,7 @@ SDL_Color azvListbox::GetItemColor(size_t index)
 
 int azvListbox::DelItem(size_t index)
 {
-	if (index < items.capacity())
+	if (index < items.size())
 	{
 		delete items[index].text;
 		items.erase(items.begin()+index);

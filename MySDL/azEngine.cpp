@@ -22,6 +22,7 @@ void azEngine::DeinitLibs()
 	DBGLOG("azEngine::DeinitLibs()");
 	IMG_Quit();
 	TTF_Quit();
+	Mix_Quit();
 	SDL_Quit();
 	libs_inited = false;
 }
@@ -42,6 +43,10 @@ int azEngine::InitLibs()
 	{
 		ret++;
 		DBGLOG("Error Init IMG %s\n", SDL_GetError());
+	}
+	if (Mix_Init(MIX_INIT_FLAG) < 0)
+	{
+		ret++;
 	}
 	libs_inited = true;
 	return ret;

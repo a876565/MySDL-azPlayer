@@ -51,6 +51,15 @@
     <ClCompile Include="azvListbox.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="MyMusic.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="device.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ustr.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="device.h">
@@ -93,6 +102,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="azvListbox.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MyMusic.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

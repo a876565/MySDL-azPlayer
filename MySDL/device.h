@@ -1,16 +1,16 @@
 #pragma once
 #ifdef _WIN32
-extern"C"{
 #define _CRT_SECURE_NO_WARNINGS
 #pragma warning(disable:4244)
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
-}
+#include <SDL_mixer.h>
 #else
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 #endif
 
 #include <memory>
@@ -36,6 +36,7 @@ enum azLogCategory {
 #define SDL_INIT_WINDOW SDL_SHOWN
 #define SDL_INIT_RENDERER
 #define IMG_INIT_FLAG IMG_INIT_JPG|IMG_INIT_PNG
+#define MIX_INIT_FLAG MIX_INIT_FLAC|MIX_INIT_MP3
 
 #define RECT_COPY(dst,src) (dst).x=(src).x,(dst).y=(src).y,(dst).w=(src).w,(dst).h=(src).h;
 #define RECT_INIT(dst) (dst).x=(dst).y=(dst).w=(dst).h=0;
@@ -76,17 +77,15 @@ inline int is_azerr(const char *s)
 	}
 }
 
-inline std::string ws2s(const std::wstring& ws)
-{
 
-	const wchar_t* _Source = ws.c_str();
-	size_t _Dsize = 2 * ws.size() + 1;
-	char *_Dest = new char[_Dsize];
-	memset(_Dest, 0, _Dsize);
-	int e = wcstombs(_Dest, _Source, _Dsize);
-	std::string result(_Dest);
-	delete[]_Dest;
+size_t cstows(std::wstring&ws, const char *pc);
+size_t wstocs(std::string&cs, const wchar_t * pw);
 
+size_t u8stows(std::wstring&ws, const char *pc);
+size_t wstou8s(std::string&cs, const wchar_t * pw);
 
-	return result;
-}
+#ifdef _WIN32
+#define STRTOUTF8(s) {std::wstring ws;cstows(ws,s.c_str());wstou8s(s,ws.c_str());}
+#else
+#define STRTOUTF8(s)
+#endif

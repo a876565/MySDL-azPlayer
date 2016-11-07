@@ -1,11 +1,10 @@
 #include "azEngine.h"
-#include "azGraph.h"
 #include "azView.h"
 #include "azText.h"
 #include <string>
 #include <stdio.h>
 #include <sstream>
-
+#include "MyMusic.h"
 void printrenflag(Uint32 flag)
 {
 	printf("RendererFlags:");
@@ -84,40 +83,6 @@ int test_sdl()
 		tick = SDL_GetTicks();
 	}
 }
-void mainui()
-{
-
-}
-class azApp {
-public:
-	virtual void run() = 0;
-	void eventloop() {
-
-	}
-};
-class UIPage
-{
-public:
-	virtual void setup() = 0;
-	virtual void destroy() = 0;
-};
-class MainPage :public UIPage
-{
-	azvLayout* root;
-	azvListbox*songs;
-	// 通过 UIPage 继承
-	virtual void setup() override;
-	virtual void destroy() override;
-};
-class MyMusic :public azApp {
-	azEngine*engine;
-	int nowsongid;
-public:
-	void run();
-	void mainui();
-	int playmusic(const std::string&name);
-	int stopmusic();
-};
 void test_az(azEngine*e)
 {
 
@@ -225,91 +190,4 @@ int main(int argc, char **argv)
 	mApp.run();
 	azEngine::DeinitLibs();
 	return 0;
-}
-
-void MyMusic::run()
-{
-	engine = new azEngine();
-	engine->init();
-	engine->set_title("azMusic");
-
-	engine->getDefaultFont()->LoadFont("simhei.ttf", 24);
-	engine->BlendMode(SDL_BLENDMODE_BLEND);
-	mainui();
-
-	delete engine;
-}
-
-void MyMusic::mainui()
-{
-	int nowplaying = -1;
-	azvLayout*page = new azvLayout(engine);
-	azvLabel*info = new azvLabel(page);
-	azvListbox*songlist = new azvListbox(page);
-
-	page->setSize(engine->get_winrect().w, engine->get_winrect().h);
-	page->back.tex = engine->LoadTexture("test.bmp");
-
-	songlist->setPos(0, 32);
-	songlist->setSize(page->area.w / 2, page->area.h - 32);
-
-	for (int i = 0; i < 100; i++)
-	{
-		std::wstringstream wss;
-		wss << L"SongName[" << i << L"]";
-		songlist->InsertText(wss.str());
-	}
-	songlist->OnItemClick = [info, &nowplaying, this](azvList&list, int item) {
-		auto&l = dynamic_cast<azvListbox&>(list);
-		l.SetItemColor(nowplaying, COLOR_WHITE);
-		if (item > 0)
-		{
-			l.SetItemColor(item, COLOR_BLUE);
-			this->playmusic(ws2s(l.GetItemText(item)));
-		}
-		nowplaying = item;
-
-	};
-	songlist->back.color = COLOR(32, 32, 188, 64);
-
-	info->setPos(page->area.w / 2 + 32, 32);
-	info->setSize(page->area.w / 2 - 64, page->area.h - 128);
-	info->text.setText(L"这是提示信息");
-
-
-	while (1)
-	{
-		engine->RenderClear();
-		page->draw();
-		engine->RenderFresh();
-		SDL_Event event;
-		while (SDL_PollEvent(&event))
-		{
-			page->onEvent(event);
-			if (event.type == SDL_QUIT)
-				goto end;
-		}
-	}
-end:
-	delete page;
-}
-
-int MyMusic::playmusic(const std::string & name)
-{
-	return 0;
-}
-
-int MyMusic::stopmusic()
-{
-	return 0;
-}
-
-// 通过 UIPage 继承
-
-void MainPage::setup()
-{
-}
-
-void MainPage::destroy()
-{
 }
