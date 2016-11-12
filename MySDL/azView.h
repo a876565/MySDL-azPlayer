@@ -147,6 +147,8 @@ public :
 	virtual int onRelease(int x, int y, Uint32 flag) override;
 	virtual int onWheel(int dx, int dy) override;
 };
+
+typedef std::unique_ptr<azvLayout> pazvLayout;
 #include "azvLabel.h"
 #include "azvImage.h"
 #include "azvButton.h"

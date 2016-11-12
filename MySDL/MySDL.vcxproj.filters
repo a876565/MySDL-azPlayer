@@ -60,6 +60,9 @@
     <ClCompile Include="ustr.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="tinyxml2.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="device.h">
@@ -105,6 +108,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="MyMusic.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tinyxml2.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -55,7 +55,11 @@ int azCFontMgr::GetTexChar(TEXCHAR & tch)
 			return -1;
 	}
 	TEXMAP &tm = *(TexMaps.rbegin());
-	azSurface sur=azSurface(new azCSurface(TTF_RenderGlyph_Blended(font, tch.ch, COLOR_WHITE)));
+	SDL_Surface*orisur = TTF_RenderGlyph_Blended(font, tch.ch, COLOR_WHITE);
+	if (orisur == nullptr)
+		return -1;
+	azSurface sur=azSurface(new azCSurface(orisur));
+
 	union PIXEL {
 		unsigned char p[4];
 		struct {

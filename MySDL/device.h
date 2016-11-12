@@ -1,6 +1,6 @@
 #pragma once
 #ifdef _WIN32
-#define _CRT_SECURE_NO_WARNINGS
+//#define _CRT_SECURE_NO_WARNINGS
 #pragma warning(disable:4244)
 #include <SDL.h>
 #include <SDL_image.h>
@@ -44,8 +44,20 @@ enum azLogCategory {
 #define COLOR_INIT(c) (c).r=(c).g=(c).b=(c).a=255;
 #define COLOR_SET(c,r,g,b,a) (c).r=r,(c).g=g,(c).b=b,(c).a=a;
 
+#define SONG_FILE_NAME "song.xml"
 #define DEFAULT_FONT_NAME "simhei.ttf"
-#define DEFAULT_FONT_SIZE 16
+#define DEFAULT_FONT_SIZE 24
+
+template<class FileStream>
+inline void  skip_utf8_bom(FileStream&f)
+{
+	char bom[3];
+	f.read(bom, 3);
+	if ((unsigned char)bom[0] != 0xef || (unsigned char)bom[1] != 0xbb || (unsigned char)bom[2] != 0xbf)
+	{
+		f.seekg(0, std::ios::beg);
+	}
+}
 
 const std::wstring nullwstr(L"");
 
@@ -85,7 +97,50 @@ size_t u8stows(std::wstring&ws, const char *pc);
 size_t wstou8s(std::string&cs, const wchar_t * pw);
 
 #ifdef _WIN32
+
 #define STRTOUTF8(s) {std::wstring ws;cstows(ws,s.c_str());wstou8s(s,ws.c_str());}
+#define DIR_SEP '\\'
+#define DIR_SEPS "\\"
+
+
+
+inline size_t u8stocs(std::string & cs, const char * u8s)
+{
+	size_t sz;
+	std::wstring ws;
+	sz = u8stows(ws, u8s);
+	if (sz == 0)
+		return 0;
+	sz = wstocs(cs, ws.c_str());
+	return sz;
+}
+
+inline size_t cstou8s(std::string & u8s, const char * cs)
+{
+	size_t sz;
+	std::wstring ws;
+	sz = cstows(ws, cs);
+	if (sz == 0)
+		return 0;
+	sz = wstocs(u8s, ws.c_str());
+	return sz;
+}
+
 #else
+
 #define STRTOUTF8(s)
+#define DIR_SEP '/'
+#define DIR_SEPS "/"
+
+inline size_t u8stocs(std::string & cs, const char * u8s)
+{
+	cs = u8s;
+	return u8s.length();
+}
+
+inline size_t cstou8s(std::string & u8s, const char * cs)
+{
+	u8s = cs;
+	return u8s.length();
+}
 #endif
