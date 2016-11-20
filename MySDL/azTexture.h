@@ -52,37 +52,66 @@ typedef RefPtr<azCSurface> azSurface;
 #else
 typedef std::shared_ptr<azCSurface> azSurface;
 #endif
-
+struct TexData {
+	int RefCount;
+	SDL_Texture*tex;
+	std::string name;
+};
 class azCTexture
 {
-	int m_w, m_h;
 	/*
 	int access;*/
+
+	int m_w, m_h;
 	Uint32 m_format;
+	SDL_Rect m_src;
+	int*m_refcount;
 	SDL_Texture *m_tex;
 	SDL_Renderer*m_ren;
 public:
+	azCTexture(azCTexture&tex):azCTexture(tex,tex.m_src)
+	{}
+	azCTexture(azCTexture&tex, const SDL_Rect& src) :
+		m_tex(tex.m_tex), m_format(tex.m_format),
+		m_w(src.w),m_h(src.h),
+		m_ren(tex.m_ren), m_src(src),m_refcount(tex.m_refcount)
+	{
+		(*m_refcount)++;
+	}
 	azCTexture(SDL_Texture *tex, SDL_Renderer*ren) : m_tex(tex), m_ren(ren) {
-		SDL_QueryTexture(m_tex, &m_format, nullptr, &m_w, &m_h);
+		m_refcount = new int(1);
+		SDL_QueryTexture(m_tex, &m_format, nullptr, &m_src.w, &m_src.h);
+		m_w = m_src.w;
+		m_h = m_src.h;
+	}
+	azCTexture(SDL_Texture *tex, SDL_Renderer*ren,const SDL_Rect&src) : 
+		m_tex(tex), m_ren(ren),m_src(src) {
+		SDL_QueryTexture(m_tex, &m_format, nullptr, nullptr, nullptr);
+		m_refcount = new int(1);
+		m_w = m_src.w;
+		m_h = m_src.h;
 	}
 	void draw(SDL_Rect*dst = nullptr, SDL_Rect*src = nullptr)
 	{
 		SDL_assert((m_tex&&m_ren));
-		SDL_RenderCopy(m_ren, m_tex, src, dst);
+		SDL_RenderCopy(m_ren, m_tex, src?src:&m_src, dst);
 	}
 	void draw2(SDL_Rect*dst = nullptr, SDL_Rect*src = nullptr, double angle = 0,
 		SDL_Point*pot = nullptr, SDL_RendererFlip flip = SDL_FLIP_NONE)
 	{
 		SDL_assert((m_tex&&m_ren));
-		SDL_RenderCopyEx(m_ren, m_tex, src, dst, angle, pot, flip);
+		SDL_RenderCopyEx(m_ren, m_tex, src ? src : &m_src, dst, angle, pot, flip);
 	}
 	void getSize(int*pw, int*ph)
 	{
-		SDL_QueryTexture(m_tex, &m_format, nullptr, &m_w, &m_h);
 		if (pw)
 			*pw = m_w;
 		if (ph)
 			*ph = m_h;
+	}
+	void getRealSize(int*pw, int*ph)
+	{
+		SDL_QueryTexture(m_tex, &m_format, nullptr, pw, ph);
 	}
 	int update(void*pixels,SDL_Rect*pRect, int pitch)
 	{
@@ -96,13 +125,31 @@ public:
 	int setBlend(SDL_BlendMode blmod) {return SDL_SetTextureBlendMode(m_tex, blmod); }
 	int setAlpha(Uint8 a) { return SDL_SetTextureAlphaMod(m_tex, a); };
 	int setColor(Uint8 r, Uint8 g, Uint8 b) { return SDL_SetTextureColorMod(m_tex, r, g, b); }
+	SDL_Rect&getSrc() { return m_src; }
+	void setSize(int w = 0, int h = 0)
+	{
+		m_w = w ? w : m_src.w;
+		m_h = h ? h : m_src.h;
+	}
 	int width() { return m_w; }
 	int height() { return m_h; }
-	Uint32 format() { return m_format; };
+	Uint32 format() { return m_format; }
+	void resize() {
+		SDL_QueryTexture(m_tex, &m_format, nullptr, &m_src.w, &m_src.h);
+		m_w = m_src.w;
+		m_h = m_src.h;
+	}
+
 	~azCTexture()
 	{
 		if (m_tex)
-			SDL_DestroyTexture(m_tex);
+		{
+			if (--(*m_refcount) == 0)
+			{
+				SDL_DestroyTexture(m_tex);
+				delete m_refcount;
+			}
+		}
 	};
 };
 
@@ -111,3 +158,11 @@ typedef RefPtr<azCTexture> azTexture;
 #else
 typedef std::shared_ptr<azCTexture> azTexture;
 #endif
+inline azTexture GetSubTex(azTexture tex)
+{
+	return azTexture(new azCTexture(*tex, tex->getSrc()));
+}
+inline azTexture GetSubTex(azTexture tex, const SDL_Rect&src)
+{
+	return azTexture(new azCTexture(*tex, src));
+}

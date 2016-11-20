@@ -32,6 +32,7 @@ int azText::draw(SDL_Rect * target)
 	SDL_Rect r;
 	int x=0, y=0;
 	int hwrap=0;
+	font->SetColor(color.r, color.g, color.b);
 	for (TEXCHAR&tc : tchs)
 	{
 		hwrap = __max(hwrap, tc.loc.h);
@@ -52,7 +53,6 @@ int azText::draw(SDL_Rect * target)
 		r.h = tc.loc.h;
 		if (color.a != 255)
 			tc.tex->setAlpha(color.a);
-		tc.tex->setColor(color.r, color.g, color.b);
 		tc.tex->draw(&r, &tc.loc);
 
 		x += r.w;

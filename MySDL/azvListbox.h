@@ -1,5 +1,6 @@
 #pragma once
 #include "azView.h"
+
 #include <functional>
 
 static SDL_Color DefHoverColor = COLOR(0x77, 0x77, 0xff, 0xb0);
@@ -27,12 +28,12 @@ public:
 
 	azvList(azView*p) :azView(p), title(e), title_back(e),
 		slidespeed(20),
-		select_item(-1), hover_item(-1),
-		hover_color(COLOR(0x77, 0x77, 0xff, 0xb0)),
-		select_color(COLOR(0x66, 0x00, 0xff, 0xd0)) 
+		press_item(-1),select_item(-1), hover_item(-1),
+		hover_color(DefHoverColor),
+		select_color(DefSelectColor)
 	{
 		back.color = COLOR(0x55, 0xdd, 0xff, 0x63);
-		back.border = COLOR(0x55, 0xdd, 0xff, 0xff);
+		back.border = COLOR_NONE;
 		title_back.color = COLOR(0x55, 0xdd, 0xff, 0xc0);
 	};
 	virtual ~azvList();
@@ -42,6 +43,7 @@ struct ListItem
 {
 	int h;
 	azText*text;
+	azTexture icon;
 };
 class azvListbox :
 	public azvList
@@ -60,9 +62,11 @@ public:
 	int InsertText(const std::wstring&str,SDL_Color color=COLOR_WHITE);
 	int SetItemText(size_t index,const std::wstring&str);
 	int SetItemColor(size_t index, SDL_Color color);
+	int SetItemIcon(size_t index,azTexture&tex);
 
 	const std::wstring& GetItemText(size_t index);
 	SDL_Color GetItemColor(size_t index);
+	azTexture& GetItemIcon(size_t index);
 
 	int CalcAllHeight(){
 		allheight = 0;

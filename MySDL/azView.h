@@ -1,14 +1,12 @@
 #pragma once
 #include "azEngine.h"
 #include "azFontMgr.h"
+#include "azText.h"
 #include <vector>
-
+#include <functional>
 #define SP_TEX_BACK 1
 #define SP_COLOR_BACK 2
 #define AZDEBUGUI 0
-
-#define SET_DRAW_AREA SDL_Rect ori_draw_area;e->SetDrawer(area,&ori_draw_area);
-#define BACK_DRAW_AREA e->SetDrawer(ori_draw_area,nullptr);
 
 class azShape
 {
@@ -119,6 +117,7 @@ class azvLayout :
 	public azView
 {
 	azView*focus_view;
+	bool focus_locked;
 public :
 	azvLayout(azEngine*en) :azView(en){}
 	azvLayout(azView*v) :azView(v){};
@@ -136,6 +135,7 @@ public :
 
 	void Clear();
 
+
 	virtual void draw();
 
 	void LoadFromFile(const std::string&fname);
@@ -149,7 +149,3 @@ public :
 };
 
 typedef std::unique_ptr<azvLayout> pazvLayout;
-#include "azvLabel.h"
-#include "azvImage.h"
-#include "azvButton.h"
-#include "azvListbox.h"

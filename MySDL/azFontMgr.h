@@ -31,6 +31,8 @@ public:
 	void CloseFont();
 	int NewTexMap();
 	int GetTexChar(TEXCHAR&tch);
+	void SetColor(Uint8 r, Uint8 g, Uint8 b);
+	void SetAlpha(Uint8 a);
 	azTexture RenderTexText(const std::string str, SDL_Color color, int maxlength = 1024);
 	azSurface RenderTexSur(const std::string str, SDL_Color color, int maxlength = 1024);
 	void test_drawfonttexs(int id,int x,int y)

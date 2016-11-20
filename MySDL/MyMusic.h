@@ -2,6 +2,13 @@
 #include "azEngine.h"
 #include "azView.h"
 #include "azText.h"
+
+#include "azvLabel.h"
+#include "azvImage.h"
+#include "azvButton.h"
+#include "azvListbox.h"
+#include "azvSlideBar.h"
+
 #include <string>
 #include <stdio.h>
 #include <sstream>
@@ -32,15 +39,23 @@ struct MusicInfo {
 	std::string path;
 };
 class MyMusic :public azApp {
+	azEngine*engine;
+
 	azvLayout* page;
-	azvTextButton*playbtn ;
-	azvTextButton*searchbtn;
+	azvButton*playbtn ;
+	azvButton*searchbtn;
 	azvLabel*info;
 	azvListbox*songlist;
+	azvSlideBar*volslide;
+	azvLabel*volinfo;
+	azvSongSlide*songslide;
 
-	azEngine*engine;
+	azTexture music_ico;
+
 	int nowsongid;
 	Mix_Music*music;
+	int mu_start_tick, mu_length;
+
 	std::vector<std::string>songs;
 public:
 	void run();

@@ -82,88 +82,114 @@ public:
 		}
 		return azTexture();
 	}
-	//渲染字符
+//渲染字符
 
 
 
-	inline int SetColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a) { return SDL_SetRenderDrawColor(m_renderer, r, g, b, a); }
-	inline int SetColor(SDL_Color color) { return SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a); }
+inline int SetColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a) { return SDL_SetRenderDrawColor(m_renderer, r, g, b, a); }
+inline int SetColor(SDL_Color color) { return SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a); }
 
-	inline void RenderFresh() { 
-		SDL_RenderPresent(m_renderer); 
-	}
-	inline int RenderClear() { SetColor(COLOR_BLACK); return SDL_RenderClear(m_renderer); }
+inline void RenderFresh() {
+	SDL_RenderPresent(m_renderer);
+}
+inline int RenderClear() { SetColor(COLOR_BLACK); return SDL_RenderClear(m_renderer); }
 
-	void resetArea() {
-		m_area.x = m_area.y = 0;
-		m_area.w = m_winrect.w, m_area.h = m_winrect.h; }
-	inline int MoveDrawer(const SDL_Rect&area, SDL_Rect*old) {
-		if (old)
-			*old = m_area;
-		m_area.x += area.x, m_area.y += area.y;
-		m_area.w = area.w, m_area.h = area.h;
-		return SDL_RenderSetViewport(m_renderer, &m_area);
-	}
-	inline int SetDrawer(const SDL_Rect&area,SDL_Rect*old)
+void resetArea() {
+	m_area.x = m_area.y = 0;
+	m_area.w = m_winrect.w, m_area.h = m_winrect.h;
+}
+inline int MoveDrawer(int dx, int dy, SDL_Rect*old) {
+	if (old)
+		*old = m_area;
+	m_area.x += dx, m_area.y += dy;
+	return SDL_RenderSetViewport(m_renderer, &m_area);
+}
+inline int MoveDrawer(const SDL_Rect&area, SDL_Rect*old) {
+	if (old)
+		*old = m_area;
+	m_area.x += area.x, m_area.y += area.y;
+	m_area.w = area.w, m_area.h = area.h;
+	return SDL_RenderSetViewport(m_renderer, &m_area);
+}
+inline int SetDrawer(const SDL_Rect&area, SDL_Rect*old = nullptr)
+{
+	if (old)
+		*old = m_area;
+	m_area = area;
+	return SDL_RenderSetViewport(m_renderer, &m_area);
+}
+inline int BlendMode(SDL_BlendMode blend) { return SDL_SetRenderDrawBlendMode(m_renderer, blend); }
+inline int DrawRect(SDL_Rect*r) { return SDL_RenderDrawRect(m_renderer, r); }
+inline int DrawRects(SDL_Rect*r, int n) { return SDL_RenderDrawRects(m_renderer, r, n); }
+inline int FillRect(SDL_Rect*r) { return SDL_RenderFillRect(m_renderer, r); }
+inline int FillRects(SDL_Rect*r, int n) { return SDL_RenderFillRects(m_renderer, r, n); }
+inline int DrawPoint(int x, int y) { return SDL_RenderDrawPoint(m_renderer, x, y); }
+inline int DrawPoint(SDL_Point*p) { return SDL_RenderDrawPoint(m_renderer, p->x, p->y); }
+inline int DrawPoints(SDL_Point*p, int n) { return SDL_RenderDrawPoints(m_renderer, p, n); }
+inline int DrawLine(int x1, int y1, int x2, int y2) { return SDL_RenderDrawLine(m_renderer, x1, y1, x2, y2); }
+inline int DrawLine(SDL_Point*p1, SDL_Point*p2) { return SDL_RenderDrawLine(m_renderer, p1->x, p1->y, p2->x, p2->y); }
+inline int DrawLines(SDL_Point*p, int n) { return SDL_RenderDrawLines(m_renderer, p, n); }
+
+//设置&获取标题
+inline void set_title(const std::string &title)
+{
+	m_title = title;
+	if (m_window)
+		SDL_SetWindowTitle(m_window, m_title.c_str());
+}
+inline const std::string &get_title() { return m_title; }
+
+//设置&获取窗口大小位置
+void set_winrect(const SDL_Rect &rect);
+inline void update_winrect() {
+	SDL_GetWindowSize(m_window, &m_winrect.w, &m_winrect.h);
+	SDL_GetWindowPosition(m_window, &m_winrect.x, &m_winrect.y);
+}
+inline const SDL_Rect &get_winrect() { return m_winrect; }
+inline const SDL_Rect &area() { return m_area; }
+
+
+azFont& getDefaultFont() { return DefaultFont; };
+void setDefaultFont(azFont&font) {
+	DefaultFont = font;
+};
+
+void Tick() {
+	last_tick = tick;
+	tick = SDL_GetTicks();
+	past_tick = tick - last_tick;
+	if (past_tick < (1000 / fps_limit))
 	{
-		if(old)
-			*old = m_area;
-		m_area = area;
-		return SDL_RenderSetViewport(m_renderer, &m_area);
-	}
-	inline int BlendMode(SDL_BlendMode blend) { return SDL_SetRenderDrawBlendMode(m_renderer, blend); }
-	inline int DrawRect(SDL_Rect*r) {return SDL_RenderDrawRect(m_renderer, r); }
-	inline int DrawRects(SDL_Rect*r,int n) { return SDL_RenderDrawRects(m_renderer, r,n); }
-	inline int FillRect(SDL_Rect*r) { return SDL_RenderFillRect(m_renderer, r); }
-	inline int FillRects(SDL_Rect*r, int n) { return SDL_RenderFillRects(m_renderer, r, n); }
-	inline int DrawPoint(int x,int y) { return SDL_RenderDrawPoint(m_renderer, x, y); }
-	inline int DrawPoint(SDL_Point*p) { return SDL_RenderDrawPoint(m_renderer, p->x,p->y); }
-	inline int DrawPoints(SDL_Point*p, int n) { return SDL_RenderDrawPoints(m_renderer, p, n); }
-	inline int DrawLine(int x1, int y1, int x2, int y2) { return SDL_RenderDrawLine(m_renderer, x1, y1, x2, y2); }
-	inline int DrawLine(SDL_Point*p1,SDL_Point*p2) { return SDL_RenderDrawLine(m_renderer, p1->x, p1->y, p2->x, p2->y); }
-	inline int DrawLines(SDL_Point*p,int n) { return SDL_RenderDrawLines(m_renderer, p,n); }
-
-	//设置&获取标题
-	inline void set_title(const std::string &title)
-	{
-		m_title = title;
-		if (m_window)
-			SDL_SetWindowTitle(m_window, m_title.c_str());
-	}
-	inline const std::string &get_title() { return m_title; }
-
-	//设置&获取窗口大小位置
-	void set_winrect(const SDL_Rect &rect);
-	inline void update_winrect() {
-		SDL_GetWindowSize(m_window, &m_winrect.w, &m_winrect.h);
-		SDL_GetWindowPosition(m_window, &m_winrect.x, &m_winrect.y);
-	}
-	inline const SDL_Rect &get_winrect() { return m_winrect; }
-	inline const SDL_Rect &area() { return m_area; }
-
-
-	azFont& getDefaultFont() { return DefaultFont; };
-	void setDefaultFont(azFont&font) {
-		DefaultFont = font;
-	};
-
-	void Tick() { 
-		last_tick = tick; 
-		tick = SDL_GetTicks(); 
+		SDL_Delay((1000 / fps_limit) - past_tick);
+		tick = SDL_GetTicks();
 		past_tick = tick - last_tick;
-		if (past_tick < (1000 / fps_limit))
-		{
-			SDL_Delay((1000 / fps_limit) - past_tick);
-			tick = SDL_GetTicks();
-			past_tick = tick - last_tick;
-		}
 	}
-	Uint32 GetTick() { return tick; }
-	Uint32 PastTick() { return past_tick; }
+}
+Uint32 GetTick() { return tick; }
+Uint32 PastTick() { return past_tick; }
 };
 class azDrawer {
 public:
-	virtual int draw(SDL_Rect*target)=0;
+	virtual int draw(SDL_Rect*target) = 0;
 	azDrawer() {};
 	~azDrawer() {}
+};
+class DrawMove {
+	azEngine*e;
+	SDL_Rect ori;
+	DrawMove(azEngine*en, const SDL_Rect&r) :
+		e(en)
+	{
+		e->MoveDrawer(r, &ori);
+	};
+	DrawMove(azEngine*en, int x, int y, int w, int h) :
+		e(en)
+	{
+		SDL_Rect r = { x,y,w,h };
+		e->MoveDrawer(r, &ori);
+	}
+	~DrawMove()
+	{
+		e->SetDrawer(ori);
+	}
 };

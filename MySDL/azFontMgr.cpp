@@ -121,6 +121,22 @@ int azCFontMgr::GetTexChar(TEXCHAR & tch)
 	return 0;
 }
 
+void azCFontMgr::SetColor(Uint8 r, Uint8 g, Uint8 b)
+{
+	for (auto&t : TexMaps)
+	{
+		t.tex->setColor(r, g, b);
+	}
+}
+
+
+void azCFontMgr::SetAlpha(Uint8 a)
+{
+	for (auto&t : TexMaps)
+	{
+		t.tex->setAlpha(a);
+	}
+}
 
 azTexture azCFontMgr::RenderTexText(const std::string str,SDL_Color color,int maxlength)
 {

@@ -101,8 +101,8 @@ void test_az(azEngine*e)
 
 	azvImage *img1 = new azvImage(ui);
 	azvLabel *label1 = new azvLabel(ui);
-	azvTextButton *btn1 = new azvTextButton(ui);
-	azvTextButton *btn2 = new azvTextButton(ui);
+	azvButton *btn1 = new azvButton(ui);
+	azvButton *btn2 = new azvButton(ui);
 	azvListbox *listbox1 = new azvListbox(ui);
 
 
@@ -118,12 +118,12 @@ void test_az(azEngine*e)
 	btn1->text.setText(L"ClickMe");
 	btn1->setSize(128, 60);
 	btn1->setPos(0, 120);
-	btn1->onClick = [label1, &hello_num, &hello_strs](azvButton&btn) {label1->text.setText(hello_strs[hello_num]); if (++hello_num > 3)hello_num = 0; };
+	btn1->onClick = [label1, &hello_num, &hello_strs](azvButtonBase&btn) {label1->text.setText(hello_strs[hello_num]); if (++hello_num > 3)hello_num = 0; };
 
 	btn2->setSize(128, 60);
 	btn2->setPos(0, 220);
 	btn2->text.setText(L"LONG LABEL Test");
-	btn2->onClick = [label1](azvButton&) {
+	btn2->onClick = [label1](azvButtonBase&) {
 		label1->setSize(320, 480);
 		label1->text.setText(L"¡¶Ò»ÇÐ¡·\n"
 			"±±µº\n"
@@ -181,6 +181,7 @@ end:
 #ifdef _DEBUG
 #undef main
 #endif
+#include "ID3Reader.h"
 int main(int argc, char **argv)
 {
 	// test_sdl();

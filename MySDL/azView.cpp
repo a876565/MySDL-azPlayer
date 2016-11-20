@@ -90,7 +90,7 @@ void azView::draw()
 		e->DrawRect(&r);
 #endif // AZDEBUG
 	}
-#ifdef AZDEBUG
+#if AZDEBUGUI
 	SDL_Rect r = area;
 	r.x = r.y = 0;
 	e->SetColor(COLOR_RED);
@@ -170,6 +170,7 @@ int azvLayout::onMoveOut(int x, int y)
 {
 	if (focus_view)
 	{
+		focus_locked = false;
 		focus_view->onMoveOut(x, y);
 		return 1;
 	}
@@ -178,13 +179,15 @@ int azvLayout::onMoveOut(int x, int y)
 
 int azvLayout::onMoving(int x, int y, int dx, int dy)
 {
+	if(focus_locked&&focus_view)
+		return focus_view->onMoving(x, y, dx, dy);
+
 	azView*v = FindChild(x, y);
 	if (v == focus_view)
 	{
 		if (v)
 		{
-			v->onMoving(x, y, dx, dy);
-			return 1;
+			return v->onMoving(x, y, dx, dy);
 		}
 	}
 	else
@@ -194,8 +197,7 @@ int azvLayout::onMoving(int x, int y, int dx, int dy)
 		focus_view = v;
 		if (v)
 		{
-			v->onMoveIn(x , y );
-			return 1;
+			return v->onMoveIn(x , y );
 		}
 	}
 	return 0;
@@ -204,12 +206,12 @@ int azvLayout::onMoving(int x, int y, int dx, int dy)
 int azvLayout::onPress(int x, int y,Uint32 flag)
 {
 	azView*v = FindChild(x, y);
+	focus_locked = true;
 	if (v == focus_view)
 	{
 		if (v)
 		{
-			v->onPress(x , y,flag);
-			return 1;
+			return v->onPress(x , y,flag);
 		}
 	}
 	else
@@ -219,8 +221,7 @@ int azvLayout::onPress(int x, int y,Uint32 flag)
 		focus_view = v;
 		if (v)
 		{
-			v->onPress(x , y,flag);
-			return 1;
+			return v->onPress(x , y,flag);
 		}
 	}
 	return 0;
@@ -229,12 +230,12 @@ int azvLayout::onPress(int x, int y,Uint32 flag)
 int azvLayout::onRelease(int x, int y,Uint32 flag)
 {
 	azView*v = FindChild(x, y);
+	focus_locked = false;
 	if (v == focus_view)
 	{
 		if (v)
 		{
-			v->onRelease(x , y , flag);
-			return 1;
+			return v->onRelease(x , y , flag);
 		}
 	}
 	else
@@ -244,8 +245,7 @@ int azvLayout::onRelease(int x, int y,Uint32 flag)
 		focus_view = v;
 		if (v)
 		{
-			v->onRelease(x , y , flag);
-			return 1;
+			return v->onRelease(x , y , flag);
 		}
 	}
 	return 0;
@@ -255,7 +255,7 @@ int azvLayout::onWheel(int dx, int dy)
 {
 	if (focus_view)
 	{
-		focus_view->onWheel(dx, dy);
+		return focus_view->onWheel(dx, dy);
 	}
 	return 1;
 }

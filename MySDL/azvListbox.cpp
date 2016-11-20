@@ -17,13 +17,16 @@ void azvListbox::draw()
 	title_back.draw(&r);
 	title.draw(&r);
 
+	r.y = r.h;
+	r.h = area.h - r.h;
+	e->MoveDrawer(r, nullptr);
 	y = 0;
 	i = 0;
 	for (auto& t : items)
 	{
 		if (y + t.h > nowpos)
 		{
-			y =r.h+y-nowpos ;
+			y =y-nowpos ;
 			break;
 		}
 		y += t.h;
@@ -33,7 +36,7 @@ void azvListbox::draw()
 	{
 		auto&t = items[i];
 		r.h = t.h;
-		if (y + r.h > area.h)
+		if (y> area.h)
 			break;
 		r.y =y;
 
@@ -47,12 +50,21 @@ void azvListbox::draw()
 			e->SetColor(hover_color);
 			e->FillRect(&r);
 		}
-		t.text->draw(&r);
+		int h;
+		if (t.icon)
+		{
+			SDL_Rect ico_r = { 0,y+(t.h - t.icon->height()) / 2,
+				t.icon->width(),t.icon->height() };
+			t.icon->draw(&ico_r);
+			r.x = t.icon->width();
+		}
+		h=t.text->draw(&r);
+		r.x = 0;
 
 		y += r.h;
 		i++;
 	}
-
+	e->SetDrawer(ori);
 }
 
 int azvListbox::SlideList(int dist)
@@ -112,6 +124,8 @@ int azvListbox::SetItemText(size_t index, const std::wstring & str)
 		auto& it = items[index];
 		it.text->setText(str);
 		int h = it.text->CalcHeight(area.w);
+		if (it.icon&&it.icon->height() > h)
+			h = it.icon->height();
 		if (it.h != h)
 		{
 			it.h = h;
@@ -126,6 +140,24 @@ int azvListbox::SetItemColor(size_t index,SDL_Color color)
 	if (index < items.size())
 	{
 		items[index].text->setColor(color);
+	}
+	return 0;
+}
+
+int azvListbox::SetItemIcon(size_t index, azTexture & tex)
+{
+	if (index < items.size())
+	{
+		auto& it = items[index];
+		it.icon=tex;
+		int h = it.text->CalcHeight(area.w);
+		if (it.icon&&it.icon->height() > h)
+			h = it.icon->height();
+		if (it.h != h)
+		{
+			it.h = h;
+			CalcAllHeight();
+		}
 	}
 	return 0;
 }
@@ -146,6 +178,15 @@ SDL_Color azvListbox::GetItemColor(size_t index)
 		return items[index].text->getColor();
 	}
 	return COLOR_WHITE;
+}
+
+azTexture& azvListbox::GetItemIcon(size_t index)
+{
+	if (index < items.size())
+	{
+		return items[index].icon;
+	}
+	return items[0].icon;
 }
 
 int azvListbox::DelItem(size_t index)

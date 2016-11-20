@@ -35,9 +35,12 @@ void MyMusic::run()
 
 	engine->BlendMode(SDL_BLENDMODE_BLEND);
 
-	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
+	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 8192);
+
 	init_songs();
 
+	music_ico = engine->LoadTexture("music_ico.png");
+	music_ico->setSize(24, 24);
 	mainui();
 
 	Mix_CloseAudio();
@@ -47,26 +50,29 @@ void MyMusic::run()
 void MyMusic::mainui()
 {
 	page = new azvLayout(engine);
-	playbtn = new azvTextButton(page);
-	searchbtn = new azvTextButton(page);
-	info = new azvLabel(page);
+	playbtn = new azvButton(page);
+	searchbtn = new azvButton(page);
+	volslide = new azvSlideBar(page);
 	songlist = new azvListbox(page);
+	info = new azvLabel(page);
+	volinfo= new azvLabel(page);
+	songslide = new azvSongSlide(page);
+
 	page->setSize(engine->get_winrect().w, engine->get_winrect().h);
 	page->back.tex = engine->LoadTexture("test.bmp");
 
 	playbtn->setPos(96, page->area.h - 48);
 	playbtn->setSize(96, 36);
 	playbtn->text.setText(L"Í£Ö¹");
-	playbtn->onClick = [this](azvButton&) {this->stopmusic(); };
+	playbtn->onClick = [this](azvButtonBase&) {this->stopmusic(); };
 
 	searchbtn->setPos(96+128, page->area.h - 48);
 	searchbtn->setSize(128, 36);
 	searchbtn->text.setText(L"ËÑË÷ÒôÀÖ");
-	searchbtn->onClick = [this](azvButton&) {
+	searchbtn->onClick = [this](azvButtonBase&) {
 		tinyxml2::XMLDocument doc;
 		tinyxml2::XMLElement *eles;
 		tinyxml2::XMLElement *p;
-		;
 		doc.LoadFile(SONG_FILE_NAME);
 		eles=doc.FirstChildElement("SearchSong");
 		if (eles)
@@ -90,11 +96,30 @@ void MyMusic::mainui()
 	setuplist();
 
 	info->setPos(page->area.w / 2 + 32, 32);
-	info->setSize(page->area.w / 2 - 64, page->area.h - 128);
+	info->setSize(page->area.w / 2 - 64, 128);
 	info->back.color = COLOR(63, 63, 0, 32);
 	info->text.setText(L"Î´²¥·ÅÒôÀÖ");
 
+	volslide->setPos(page->area.w/2+64,page->area.h-96);
+	volslide->setSize(page->area.w/2-96,24);
+	volslide->line_color = COLOR(128, 128, 128, 255);
+	volslide->slider_pos = 1.0;
+	volslide->onSliderMove = [this](double pos) {
+		std::wstringstream ss;
+		ss << L"ÒôÁ¿£º" << (int)(100 * pos)<<'%';
+		volinfo->text.setText(ss.str());
+		int a=Mix_Volume(0, (int)(pos * 128));
+		a=Mix_Volume(1, (int)(pos * 128));
+		a=Mix_Volume(2, (int)(pos * 128));
+	};
 
+	volinfo->setPos(page->area.w / 2 + 32, page->area.h - 64);
+	volinfo->setSize(page->area.w / 2 - 96, 24);
+	volinfo->text.setColor(COLOR_BLACK);
+	volinfo->text.setText(L"ÒôÁ¿£º100%");
+
+	songslide->setPos(page->area.w / 2 + 64, page->area.h - 128);
+	songslide->setSize(page->area.w / 2 - 96, 24);
 	while (1)
 	{
 		engine->RenderClear();
@@ -129,6 +154,9 @@ int MyMusic::playmusic(int i)
 	{
 		std::wstring songname;
 		Mix_PlayMusic(music, -1);
+		mu_start_tick = engine->GetTick();
+		mu_length = 0;
+
 		songlist->SetItemColor(nowsongid, COLOR_BLUE);
 		DBGLOG("Mix_LoadMUS %s", songs[nowsongid].c_str());
 		u8stows(songname, songs[nowsongid].c_str());
@@ -273,7 +301,6 @@ void MainPage::destroy()
 
 void MyMusic::setuplist()
 {
-	songlist->Clear();
 	for (auto&s : songs)
 	{
 		size_t beg;
@@ -283,6 +310,11 @@ void MyMusic::setuplist()
 		if (beg ==std::string::npos)beg = 0;else beg++;
 		u8stows(ws, s.substr(beg).c_str());
 
-		songlist->InsertText(ws);
+		int i=songlist->InsertText(ws);
+		songlist->GetItemIcon(i) = music_ico;
+
+		std::wstringstream ss;
+		ss << L"¹²ÓÐ" << songs.size() << L"Ê×¸èÇú";
+		songlist->title.setText(ss.str());
 	}
 }

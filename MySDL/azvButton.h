@@ -2,7 +2,7 @@
 #include "azView.h"
 #include "azText.h"
 #include <functional>
-class azvButton :
+class azvButtonBase :
 	public azView
 {
 protected:
@@ -10,10 +10,10 @@ protected:
 	int past_tick;
 	int state,prev_state;
 public:
-	std::function<void(azvButton&)>onClick;
+	std::function<void(azvButtonBase&)>onClick;
 	
-	azvButton(azView*p) :azView(p) {};
-	~azvButton();
+	azvButtonBase(azView*p) :azView(p) {};
+	~azvButtonBase();
 
 	void setState(int s) { prev_state = state; state = s; past_tick = 500; }
 
@@ -25,19 +25,19 @@ public:
 	virtual int onRelease(int x, int y, Uint32 flag) override;
 };
 
-class azvTextButton :
-	public azvButton
+class azvButton :
+	public azvButtonBase
 {
 public:
 	int padding;
 	azText text;
 	SDL_Color backs[3];
-	azvTextButton(azView*p) :azvButton(p), text(e),padding(8) {
+	azvButton(azView*p) :azvButtonBase(p), text(e),padding(8) {
 		backs[0] = COLOR(0x6f, 0x7c, 0xff, 0x63);
 		backs[1] = COLOR(0x77, 0x77, 0xff, 0xbf);
 		backs[2] = COLOR(0x66, 0x00, 0xff, 0xff);
 	};
 	virtual void draw() override;
-	~azvTextButton();
+	~azvButton();
 };
 

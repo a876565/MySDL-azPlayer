@@ -2,34 +2,34 @@
 
 
 
-azvButton::~azvButton()
+azvButtonBase::~azvButtonBase()
 {
 }
 
-int azvButton::onMoveIn(int x, int y)
+int azvButtonBase::onMoveIn(int x, int y)
 {
 	setState(1);
 	return 1;
 }
 
-int azvButton::onMoveOut(int x, int y)
+int azvButtonBase::onMoveOut(int x, int y)
 {
 	setState(0);
 	return 1;
 }
 
-int azvButton::onMoving(int x, int y, int dx, int dy)
+int azvButtonBase::onMoving(int x, int y, int dx, int dy)
 {
 	return 1;
 }
 
-int azvButton::onPress(int x, int y, Uint32 flag)
+int azvButtonBase::onPress(int x, int y, Uint32 flag)
 {
 	setState(2);
 	return 1;
 }
 
-int azvButton::onRelease(int x, int y, Uint32 flag)
+int azvButtonBase::onRelease(int x, int y, Uint32 flag)
 {
 	setState(1);
 	if (onClick)
@@ -37,7 +37,7 @@ int azvButton::onRelease(int x, int y, Uint32 flag)
 	return 1;
 }
 
-void azvTextButton::draw()
+void azvButton::draw()
 {
 	if (past_tick > 0)
 	{
@@ -67,6 +67,6 @@ void azvTextButton::draw()
 	text.draw(&r);
 }
 
-azvTextButton::~azvTextButton()
+azvButton::~azvButton()
 {
 }

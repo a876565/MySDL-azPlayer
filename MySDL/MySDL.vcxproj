@@ -158,7 +158,9 @@
     <ClCompile Include="azvImage.cpp" />
     <ClCompile Include="azvLabel.cpp" />
     <ClCompile Include="azvListbox.cpp" />
+    <ClCompile Include="azvSlideBar.cpp" />
     <ClCompile Include="device.cpp" />
+    <ClCompile Include="ID3Reader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MyMusic.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
@@ -176,7 +178,9 @@
     <ClInclude Include="azvImage.h" />
     <ClInclude Include="azvLabel.h" />
     <ClInclude Include="azvListbox.h" />
+    <ClInclude Include="azvSlideBar.h" />
     <ClInclude Include="device.h" />
+    <ClInclude Include="ID3Reader.h" />
     <ClInclude Include="MyMusic.h" />
     <ClInclude Include="RefObject.h" />
     <ClInclude Include="resource.h" />
@@ -184,9 +188,6 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MySDL.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
