@@ -33,3 +33,6 @@
 *.ilk
 *.pdb
 *.tlog
+*.idb
+*.iobj
+*.enc
