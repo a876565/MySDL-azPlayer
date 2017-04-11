@@ -8,7 +8,8 @@ SDL_Color COLOR_RED = { 255,0,0,255 };
 SDL_Color COLOR_GREEN = { 0,255,0,255 };
 SDL_Color COLOR_BLUE = { 0,0,255,255 };
 SDL_Color COLOR_BLACK = { 0,0,0,255 };
-
+SDL_Color COLOR_GREY = { 0x66,0x66,0x66,255 };
+SDL_Color COLOR_DARK = { 0x43,0x43,0x43,255 };
 #define SET_RECT(_x, _def)                                                     \
   if (rect._x == VAL_DEFAULT)                                                  \
     m_winrect._x = _def;                                                       \
@@ -17,14 +18,20 @@ SDL_Color COLOR_BLACK = { 0,0,0,255 };
 
 
 static bool libs_inited = false;
+static azEngine*singleton=nullptr;
+
 void azEngine::DeinitLibs()
 {
 	DBGLOG("azEngine::DeinitLibs()");
 	IMG_Quit();
 	TTF_Quit();
-	Mix_Quit();
+	//Mix_Quit();
 	SDL_Quit();
 	libs_inited = false;
+}
+azEngine * azEngine::getSingleton()
+{
+	return singleton;
 }
 int azEngine::InitLibs()
 {
@@ -44,10 +51,10 @@ int azEngine::InitLibs()
 		ret++;
 		DBGLOG("Error Init IMG %s\n", SDL_GetError());
 	}
-	if (Mix_Init(MIX_INIT_FLAG) < 0)
+	/*if (Mix_Init(MIX_INIT_FLAG) < 0)
 	{
 		ret++;
-	}
+	}*/
 	libs_inited = true;
 	return ret;
 }
@@ -74,7 +81,7 @@ void azEngine::init()
 	DBGLOG("azEngine::init()");
 	//创建窗口
 	m_window = SDL_CreateWindow(m_title.c_str(), m_winrect.x, m_winrect.y,
-		m_winrect.w, m_winrect.h, SDL_WINDOW_SHOWN);
+		m_winrect.w, m_winrect.h, SDL_WINDOW_SHOWN|SDL_WINDOW_RESIZABLE);
 	if (!m_window)
 	{
 		DBGLOGEX(Error, "CreateWindow:%s(%s)", m_title.c_str(), SDL_GetError());
@@ -82,7 +89,7 @@ void azEngine::init()
 	}
 	DBGLOG("CreateWindow:%s", m_title.c_str());
 	//创建渲染器
-	m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED);
+	m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED| SDL_RENDERER_TARGETTEXTURE);
 	if (!m_renderer)
 	{
 		DBGLOGEX(Error, "CreateRenderer(%s)", SDL_GetError());
@@ -94,12 +101,14 @@ void azEngine::init()
 	//重设窗口大小和位置
 	//(android下必须有这一步
 	//因为SDL会自动调整到全屏)
-	get_winrect();
+	queryWindowSize();
 	resetArea();
 
 	//初始化字体
 	DefaultFont = azFont(new azCFontMgr(this));
 	DefaultFont->LoadFont(DEFAULT_FONT_NAME, DEFAULT_FONT_SIZE);
+
+	singleton = this;
 }
 azTexture azEngine::LoadTexture(const std::string&name)
 {
@@ -124,7 +133,28 @@ void azEngine::set_winrect(const SDL_Rect & rect)
 	{
 		SDL_SetWindowPosition(m_window, m_winrect.x, m_winrect.y);
 		SDL_SetWindowSize(m_window, m_winrect.w, m_winrect.h);
+		resetArea();
 	}
+}
+void azEngine::setFullScreen(int mode)
+{
+	switch (mode)
+	{
+	case -1:
+		if (SDL_GetWindowFlags(m_window)&SDL_WINDOW_FULLSCREEN)
+			SDL_SetWindowFullscreen(m_window, 0);
+		else
+			SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+		break;
+	case 0:
+		SDL_SetWindowFullscreen(m_window,0);
+	case 1:
+		SDL_SetWindowFullscreen(m_window,SDL_WINDOW_FULLSCREEN_DESKTOP);
+	default:
+		break;
+	}
+	queryWindowSize();
+	resetArea();
 }
 void azEngine::test()
 {

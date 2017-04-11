@@ -87,7 +87,7 @@ int ID3Reader::parse_id3(SDL_RWops*file)
 	tmp = new Uint8[vh.size + 10];
 	SDL_RWread(file, tmp, vh.size + 10, 1);
 	buf = tmp + 10;
-	for (int i = 0; i < vh.size - 10;)
+	for (unsigned i = 0; i < vh.size - 10;)
 	{
 		get_frame_header(buf + i);
 		if (vh.size - i < fh.size)
@@ -107,7 +107,6 @@ int ID3Reader::parse_id3(SDL_RWops*file)
 
 int ID3Reader::add_id3tag(Uint8 * buf)
 {
-	int i;
 	id3_v2_frame_contents id3;
 	memcpy(id3.id, fh.id, 4);
 	id3.contents = new Uint8[fh.size];

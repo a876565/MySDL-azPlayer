@@ -5,8 +5,10 @@
 </SearchSong>
 
 <Songs>
+	<Path path="D:\Install\12224075-1-hd.mp4"/>
     <Path path="D:\KuGou\hita  -  他和他.mp3"/>
     <Path path="D:\KuGou\HITA - 白头吟.mp3"/>
+    <Path path=".\测试.mp3"/>
     <Path path=".\test.mp3"/>
     <Path path="D:\KuGou\HITA - 五色泪滴.mp3"/>
     <Path path="D:\KuGou\HITA - 凤栖花.mp3"/>
@@ -39,4 +41,5 @@
     <Path path="D:\KuGou\陈依婷 - 少年情.mp3"/>
     <Path path="D:\KuGou\香香 - 吟香.mp3"/>
     <Path path="D:\KuGou\馨予 - 倾国倾城.mp3"/>
+    <Path path=".\stest.mp3"/>
 </Songs>

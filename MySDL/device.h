@@ -5,24 +5,18 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
-#include <SDL_mixer.h>
 #else
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_mixer.h>
 #endif
 
 #include <memory>
 #include <string>
 
 #ifdef _DEBUG
-enum azLogCategory {
-	azLogCategoryEngine = SDL_LOG_CATEGORY_CUSTOM,
-	azLogCategory1
-};
 #define DBGLOG(...) SDL_Log(__VA_ARGS__)
-#define DBGLOGEX(pri,...) SDL_Log##pri(azLogCategoryEngine,__VA_ARGS__)
+#define DBGLOGEX(pri,...) SDL_Log##pri(SDL_LOG_CATEGORY_ERROR,__VA_ARGS__)
 #else
 
 #define DBGLOG(...) 
@@ -32,7 +26,7 @@ enum azLogCategory {
 #define VAL_NOT_CARE 0
 #define VAL_DEFAULT -1
 
-#define SDL_INIT_FLAG SDL_INIT_VIDEO
+#define SDL_INIT_FLAG SDL_INIT_VIDEO|SDL_INIT_AUDIO
 #define SDL_INIT_WINDOW SDL_SHOWN
 #define SDL_INIT_RENDERER
 #define IMG_INIT_FLAG IMG_INIT_JPG|IMG_INIT_PNG
@@ -61,7 +55,7 @@ inline void  skip_utf8_bom(FileStream&f)
 
 const std::wstring nullwstr(L"");
 
-extern SDL_Color COLOR_NONE,COLOR_WHITE,COLOR_RED,COLOR_GREEN,COLOR_BLUE,COLOR_BLACK;
+extern SDL_Color COLOR_NONE,COLOR_WHITE,COLOR_RED,COLOR_GREEN,COLOR_BLUE,COLOR_BLACK,COLOR_GREY,COLOR_DARK;
 inline SDL_Color COLOR(Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
 	SDL_Color c = { r,g,b,a };
 	return c;

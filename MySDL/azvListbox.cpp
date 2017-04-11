@@ -5,18 +5,22 @@
 
 void azvListbox::draw()
 {
-	SDL_Rect r,ori;
-	int y,i;
+	SDL_Rect r, ori;
+	int y, i;
 	e->MoveDrawer(area, &ori);
 
 	r.x = r.y = 0;
 	r.w = area.w, r.h = area.h;
 
+	//绘制背景
 	back.draw(&r);
-	r.h = title.CalcHeight(r.w);
+
+	//绘制标题
+	r.h = title.getHeight();
 	title_back.draw(&r);
 	title.draw(&r);
 
+	//准备绘制items
 	r.y = r.h;
 	r.h = area.h - r.h;
 	e->MoveDrawer(r, nullptr);
@@ -26,19 +30,19 @@ void azvListbox::draw()
 	{
 		if (y + t.h > nowpos)
 		{
-			y =y-nowpos ;
+			y = y - nowpos;
 			break;
 		}
 		y += t.h;
 		i++;
 	}
-	for (; (size_t)i<items.size();)
+	for (; (size_t)i < items.size();)
 	{
 		auto&t = items[i];
-		r.h = t.h;
-		if (y> area.h)
+		if (y >= area.h)
 			break;
-		r.y =y;
+		r.h = t.h;
+		r.y = y;
 
 		if (i == select_item)
 		{
@@ -50,28 +54,46 @@ void azvListbox::draw()
 			e->SetColor(hover_color);
 			e->FillRect(&r);
 		}
-		int h;
 		if (t.icon)
 		{
-			SDL_Rect ico_r = { 0,y+(t.h - t.icon->height()) / 2,
+			SDL_Rect ico_r = { 0,y + (t.h - t.icon->height()) / 2,
 				t.icon->width(),t.icon->height() };
 			t.icon->draw(&ico_r);
 			r.x = t.icon->width();
 		}
-		h=t.text->draw(&r);
+		t.text->draw(&r);
 		r.x = 0;
 
-		y += r.h;
+		y += t.h;
 		i++;
 	}
 	e->SetDrawer(ori);
 }
 
+int azvListbox::setSize(int w, int h)
+{
+	if (w != area.w)
+	{
+		area.w = w;
+		title.setSize(area.w, 0);
+		for (auto&t : items)
+		{
+			t.text->setSize(area.w - t.iw, 0);
+			chkHeight(t);
+		}
+	}
+	area.h = h;
+	if (area.h == 0)
+		area.h = CalcAllHeight();
+	return 0;
+}
+
 int azvListbox::SlideList(int dist)
 {
 	nowpos -= dist*slidespeed;
-	if (nowpos > allheight-area.h)
-		nowpos = allheight - area.h;
+	int items_h = area.h - title.getHeight();
+	if (nowpos > allheight - items_h)
+		nowpos = allheight - items_h;
 	if (nowpos < 0)
 		nowpos = 0;
 	return 0;
@@ -82,11 +104,11 @@ int azvListbox::SlideList(int dist)
 int azvListbox::FindItem(int mx, int my)
 {
 	SDL_Rect r = area;
-	int y,i;
-	r.h = title.CalcHeight(area.w);
+	int y, i;
+	r.h = title.getHeight();
 
 	my += nowpos;
-	y = r.h;
+	y = r.h-r.y;
 	i = 0;
 	for (auto t : items)
 	{
@@ -106,15 +128,18 @@ int azvListbox::FindItem(int mx, int my)
 
 int azvListbox::InsertText(const std::wstring & str, SDL_Color color)
 {
-	ListItem lt;
+	ListItem it;
 	azText *t = new azText(e);
 	t->setText(str);
 	t->setColor(color);
-	lt.h = t->CalcHeight(area.w);
-	lt.text = t;
-	items.push_back(lt);
+	t->setSize(area.w, 0);
+	it.text = t;
+	it.h = t->getHeight();
+	it.iw = 0;
+
+	items.push_back(it);
 	CalcAllHeight();
-	return items.size()-1;
+	return items.size() - 1;
 }
 
 int azvListbox::SetItemText(size_t index, const std::wstring & str)
@@ -123,19 +148,12 @@ int azvListbox::SetItemText(size_t index, const std::wstring & str)
 	{
 		auto& it = items[index];
 		it.text->setText(str);
-		int h = it.text->CalcHeight(area.w);
-		if (it.icon&&it.icon->height() > h)
-			h = it.icon->height();
-		if (it.h != h)
-		{
-			it.h = h;
-			CalcAllHeight();
-		}
+		chkHeight(it);
 	}
 	return 0;
 }
 
-int azvListbox::SetItemColor(size_t index,SDL_Color color)
+int azvListbox::SetItemColor(size_t index, SDL_Color color)
 {
 	if (index < items.size())
 	{
@@ -144,20 +162,34 @@ int azvListbox::SetItemColor(size_t index,SDL_Color color)
 	return 0;
 }
 
+void azvListbox::chkHeight(ListItem & it)
+{
+	if (it.icon)
+	{
+		it.iw = it.icon->width();
+		if (it.icon->height() > it.h)
+		{
+			it.h = it.icon->height();
+			CalcAllHeight();
+		}
+		it.text->setSize(area.w - it.iw, INT_MAX);
+	}
+	else if (it.h != it.text->getHeight())
+	{
+		it.iw = 0;
+		it.h = it.text->getHeight();
+		it.text->setSize(area.w, INT_MAX);
+		CalcAllHeight();
+	}
+}
+
 int azvListbox::SetItemIcon(size_t index, azTexture & tex)
 {
 	if (index < items.size())
 	{
 		auto& it = items[index];
-		it.icon=tex;
-		int h = it.text->CalcHeight(area.w);
-		if (it.icon&&it.icon->height() > h)
-			h = it.icon->height();
-		if (it.h != h)
-		{
-			it.h = h;
-			CalcAllHeight();
-		}
+		it.icon = tex;
+		chkHeight(it);
 	}
 	return 0;
 }
@@ -194,7 +226,8 @@ int azvListbox::DelItem(size_t index)
 	if (index < items.size())
 	{
 		delete items[index].text;
-		items.erase(items.begin()+index);
+		items.erase(items.begin() + index);
+		CalcAllHeight();
 	}
 	return 0;
 }
@@ -229,7 +262,7 @@ int azvList::onPress(int mx, int my, Uint32 flag)
 int azvList::onRelease(int mx, int my, Uint32 flag)
 {
 
-	if (OnItemClick&&select_item ==FindItem(mx,my))
+	if (OnItemClick&&select_item == FindItem(mx, my))
 		OnItemClick(*this, select_item);
 	return 1;
 }

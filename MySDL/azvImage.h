@@ -42,7 +42,9 @@ public:
 
 		colormod = COLOR_WHITE;
 	}
-	
+	void setScale(double s) {
+		area.w =s* srcrect.w, area.h = s*srcrect.h;
+	}
 	~azvImage();
 	virtual void draw() override;
 	virtual int setSize(int w, int h) override;

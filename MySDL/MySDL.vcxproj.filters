@@ -51,13 +51,7 @@
     <ClCompile Include="azvListbox.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="MyMusic.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="device.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ustr.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="tinyxml2.cpp">
@@ -66,7 +60,31 @@
     <ClCompile Include="azvSlideBar.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="ID3Reader.cpp">
+    <ClCompile Include="azvUIMgr.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="azChoicePage.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="azvChoices.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="azvChoiceButton.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="azLayout.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="azWindow.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="DmMgr.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MediaStream.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="azPlayer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -113,16 +131,37 @@
     <ClInclude Include="azvListbox.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="MyMusic.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="tinyxml2.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="azvSlideBar.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ID3Reader.h">
+    <ClInclude Include="azvUIMgr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="azChoicePage.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="azvChoices.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="azvChoiceButton.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="azLayout.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="azWindow.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="DmMgr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MediaStream.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="azPlayer.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

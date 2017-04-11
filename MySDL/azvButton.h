@@ -32,12 +32,13 @@ public:
 	int padding;
 	azText text;
 	SDL_Color backs[3];
-	azvButton(azView*p) :azvButtonBase(p), text(e),padding(8) {
+	azvButton(azView*p) :azvButtonBase(p), text(e),padding(4) {
 		backs[0] = COLOR(0x6f, 0x7c, 0xff, 0x63);
 		backs[1] = COLOR(0x77, 0x77, 0xff, 0xbf);
 		backs[2] = COLOR(0x66, 0x00, 0xff, 0xff);
 	};
 	virtual void draw() override;
+	virtual int setSize(int w, int h) override;
 	~azvButton();
 };
 

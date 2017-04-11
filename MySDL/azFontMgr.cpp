@@ -46,7 +46,8 @@ int azCFontMgr::GetTexChar(TEXCHAR & tch)
 	auto it = TexChs.find(tch.ch);
 	if (it != TexChs.end())
 	{
-		tch = (*it).second;
+		tch.loc = (*it).second.loc;
+		tch.tex = (*it).second.tex;
 		return 0;
 	}
 	if (TexMaps.empty())
@@ -54,7 +55,7 @@ int azCFontMgr::GetTexChar(TEXCHAR & tch)
 		if (NewTexMap()<0)
 			return -1;
 	}
-	TEXMAP &tm = *(TexMaps.rbegin());
+	TEXMAP *tm = &(*(TexMaps.rbegin()));
 	SDL_Surface*orisur = TTF_RenderGlyph_Blended(font, tch.ch, COLOR_WHITE);
 	if (orisur == nullptr)
 		return -1;
@@ -67,7 +68,7 @@ int azCFontMgr::GetTexChar(TEXCHAR & tch)
 		};
 	};
 
-	if (tm.tex->format() == SDL_PIXELFORMAT_RGBA8888)
+	if (tm->tex->format() == SDL_PIXELFORMAT_RGBA8888)
 	{
 		PIXEL *p = (PIXEL*)sur->pixels();
 
@@ -79,45 +80,47 @@ int azCFontMgr::GetTexChar(TEXCHAR & tch)
 			p[i].p[3] = t;
 		}
 	}
-	if (sur->height() > tm.hwrap)
+	if (sur->height() > tm->hwrap)
 	{
-		tm.hwrap = sur->height();
+		tm->hwrap = sur->height();
 	}
 	if (!sur)
 	{
 		DBGLOGEX(Error, "Error TTF_RenderGlyph_Blended (ch=%04x) %s", tch.ch, SDL_GetError());
 		return -1;
 	}
-	if (sur->width() + tm.x > tm.tex->width())
+	if (sur->width() + tm->x > tm->tex->width())
 	{
-		if (tm.hwrap + tm.y > tm.tex->height())
+		if (tm->hwrap + tm->y+ sur->height() > tm->tex->height())
 		{
 			if (NewTexMap()<0)
 				return -1;
-			tm = *(TexMaps.end() - 1);
-			tm.hwrap = sur->height();
+			tm = &(*(TexMaps.rbegin()));
+			tm->hwrap = sur->height();
 		}
 		else
 		{
-			tm.x = 0;
-			tm.y += tm.hwrap;
-			tm.hwrap = sur->height();
+			tm->x = 0;
+			tm->y += tm->hwrap;
+			tm->hwrap = sur->height();
 		}
 	}
 
-	tm.tex->update(sur, tm.x, tm.y);
+	tm->tex->update(sur, tm->x, tm->y);
 
 
 	TEXCHAR tc;
-	tc.loc.x = tm.x;
-	tc.loc.y = tm.y;
+	tc.ch = tch.ch;
+	tc.loc.x = tm->x;
+	tc.loc.y = tm->y;
 	tc.loc.w = sur->width();
 	tc.loc.h = sur->height();
-	tc.tex = tm.tex;
+	tc.tex = tm->tex;
 
+	tm->x += sur->width();
 	TexChs.insert(std::pair<wchar_t, TEXCHAR>(tch.ch, tc));
-	tch = tc;
-	tm.x += sur->width();
+	tch.loc = tc.loc;
+	tch.tex = tc.tex;
 	return 0;
 }
 

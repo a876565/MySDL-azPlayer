@@ -2,12 +2,20 @@
 #include <assert.h>
 size_t cstows(std::wstring&ws, const char *pc)
 {
+
 	if (NULL == pc)
 	{
 		return (size_t)(-1);
 	}
-	//size_t size_of_ch = strlen(pc)*sizeof(char);
-	//size_t size_of_wc = get_wchar_size(pc);
+	wchar_t *wcs=(wchar_t*)SDL_iconv_string("UCS-2-INTERNAL", "", pc, SDL_strlen(pc));
+	if (wcs)
+	{
+		ws = wcs;
+		return ws.length();
+	}
+	else
+		return 0;
+
 	size_t size_of_wc;
 	size_t destlen = mbstowcs(NULL, pc, 0);
 	if (destlen == (size_t)(-1))

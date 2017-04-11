@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -21,32 +21,32 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{73A0EBA8-AB72-4AF3-B5F4-42CD54C6B1F3}</ProjectGuid>
     <RootNamespace>MySDL</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -75,10 +75,10 @@
     <LibraryPath>$(SolutionDir)\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>D:\c\SDL2-2.0.4\include;$(IncludePath)</IncludePath>
-    <ReferencePath>D:\c\SDL2-2.0.4\lib\x86;$(ReferencePath)</ReferencePath>
-    <LibraryWPath>D:\c\Projects\MySDL\bin;$(LibraryWPath)</LibraryWPath>
-    <LibraryPath>D:\c\SDL2-2.0.4\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)include;$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <LibraryWPath>$(SolutionDir)bin;$(LibraryWPath)</LibraryWPath>
+    <LibraryPath>$(SolutionDir)\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)include;$(IncludePath)</IncludePath>
@@ -98,7 +98,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_ttf.lib;SDL2_image.lib;SDL2_mixer.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_ttf.lib;SDL2_image.lib;SDL2_mixer.lib;avcodec.lib;avformat.lib;avutil.lib;swresample.lib;swscale.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -109,7 +109,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_ttf.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_ttf.lib;SDL2_image.lib;SDL2_mixer.lib;avcodec.lib;avformat.lib;avutil.lib;swresample.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -124,9 +124,10 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_ttf.lib;SDL2_image.lib;SDL2_mixer.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_ttf.lib;SDL2_image.lib;SDL2_mixer.lib;avcodec.lib;avformat.lib;avutil.lib;swresample.lib;swscale.lib</AdditionalDependencies>
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -141,47 +142,60 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_ttf.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_ttf.lib;SDL2_image.lib;SDL2_mixer.lib;avcodec.lib;avformat.lib;avutil.lib;swresample.lib</AdditionalDependencies>
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="MediaStream.cpp" />
+    <ClCompile Include="azChoicePage.cpp" />
     <ClCompile Include="azEngine.cpp" />
     <ClCompile Include="azEnv.cpp" />
     <ClCompile Include="azFontMgr.cpp" />
     <ClCompile Include="azGraph.cpp" />
+    <ClCompile Include="azLayout.cpp" />
     <ClCompile Include="azText.cpp" />
     <ClCompile Include="azTexture.cpp" />
     <ClCompile Include="azvButton.cpp" />
+    <ClCompile Include="azvChoiceButton.cpp" />
+    <ClCompile Include="azvChoices.cpp" />
     <ClCompile Include="azView.cpp" />
     <ClCompile Include="azvImage.cpp" />
     <ClCompile Include="azvLabel.cpp" />
     <ClCompile Include="azvListbox.cpp" />
     <ClCompile Include="azvSlideBar.cpp" />
+    <ClCompile Include="azvUIMgr.cpp" />
+    <ClCompile Include="azWindow.cpp" />
     <ClCompile Include="device.cpp" />
-    <ClCompile Include="ID3Reader.cpp" />
+    <ClCompile Include="DmMgr.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MyMusic.cpp" />
+    <ClCompile Include="azPlayer.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
-    <ClCompile Include="ustr.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MediaStream.h" />
+    <ClInclude Include="azChoicePage.h" />
     <ClInclude Include="azEngine.h" />
     <ClInclude Include="azEnv.h" />
     <ClInclude Include="azFontMgr.h" />
     <ClInclude Include="azGraph.h" />
+    <ClInclude Include="azLayout.h" />
     <ClInclude Include="azText.h" />
     <ClInclude Include="azTexture.h" />
     <ClInclude Include="azvButton.h" />
+    <ClInclude Include="azvChoiceButton.h" />
+    <ClInclude Include="azvChoices.h" />
     <ClInclude Include="azView.h" />
     <ClInclude Include="azvImage.h" />
     <ClInclude Include="azvLabel.h" />
     <ClInclude Include="azvListbox.h" />
     <ClInclude Include="azvSlideBar.h" />
+    <ClInclude Include="azvUIMgr.h" />
+    <ClInclude Include="azWindow.h" />
     <ClInclude Include="device.h" />
-    <ClInclude Include="ID3Reader.h" />
-    <ClInclude Include="MyMusic.h" />
+    <ClInclude Include="DmMgr.h" />
+    <ClInclude Include="azPlayer.h" />
     <ClInclude Include="RefObject.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="tinyxml2.h" />

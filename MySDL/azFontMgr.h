@@ -1,4 +1,5 @@
 #pragma once
+#include "azEngine.h"
 #include <vector>
 #include <map>
 
@@ -6,7 +7,9 @@ class TEXCHAR {
 public:
 	wchar_t ch;
 	azTexture tex;
+	int flag;
 	SDL_Rect loc;
+	SDL_Rect dst;
 };
 
 class TEXMAP {

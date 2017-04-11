@@ -20,6 +20,17 @@ inline int isUIEvent(Uint32 type)
 		return 0;
 	}
 }
+void azView::addChild(azView * v) {
+	if (v->parent)
+		v->parent->rmChild(v);
+	v->parent = this;
+	childs.push_back(v);
+}
+void azView::rmChild(azView * v) {
+	auto it = std::find(childs.begin(), childs.end(), v);
+	if (it != childs.end())
+		childs.erase(it);
+}
 int azView::setSize(int w, int h)
 {
 	area.w = w;
@@ -81,32 +92,41 @@ void azView::draw()
 {
 	SDL_Rect ori_draw;
 	e->MoveDrawer(area, &ori_draw);
-	for (auto it=childs.begin(); it!=childs.end();it++)
+	draw_childs();
+	e->SetDrawer(ori_draw, nullptr);
+}
+
+void azView::draw_childs()
+{
+	for (auto it = childs.begin(); it != childs.end(); it++)
 	{
 		(*it)->draw();
+
 #if AZDEBUGUI
-		SDL_Rect r=(*it)->area;
+		SDL_Rect r = (*it)->area;
 		e->SetColor(COLOR_RED);
 		e->DrawRect(&r);
 #endif // AZDEBUG
+
 	}
+
 #if AZDEBUGUI
 	SDL_Rect r = area;
 	r.x = r.y = 0;
 	e->SetColor(COLOR_RED);
 	e->DrawRect(&r);
 #endif // AZDEBUG
-	e->SetDrawer(ori_draw, nullptr);
 }
 
 azView::~azView()
 {
+	clear();
+	remove();
 }
-azvLayout::~azvLayout()
+azPage::~azPage()
 {
-	Clear();
 }
-int azvLayout::onEvent(SDL_Event & event)
+int azPage::onEvent(SDL_Event & event)
 {
 	switch (event.type)
 	{
@@ -135,123 +155,166 @@ int azvLayout::onEvent(SDL_Event & event)
 	return	0;
 }
 
-void azvLayout::Clear()
+void azPage::rmChild(azView * v)
 {
-	for (auto v : childs)
+	if (focus_view == v)
 	{
-		delete v;
+		focus_view = nullptr;
+		focus_locked = false;
 	}
+	azView::rmChild(v);
 }
 
-void azvLayout::draw()
+
+void azPage::draw()
 {
 	back.draw(&area);
 	azView::draw();
 }
 
-void azvLayout::LoadFromFile(const std::string & fname)
+void azPage::LoadFromFile(const std::string & fname)
 {
 
 }
 
-int azvLayout::onMoveIn(int x, int y)
+int azPage::onMoveIn(int x, int y)
 {
-	azView* v = FindChild(x, y);
-	if (v)
-	{
-		focus_view = v;
-		v->onMoveIn(x, y);
-		return 1;
+	int ret = 0;
+	for (auto p = childs.rbegin(); p != childs.rend(); p++) {
+		azView*v = *p;
+		if (v->isInArea(x, y))
+		{
+			ret = v->onMoveIn(x - v->area.x, y - v->area.y);
+			if (ret)
+			{
+				focus_view = v;
+				return ret;
+			}
+		}
 	}
 	return 0;
 }
 
-int azvLayout::onMoveOut(int x, int y)
+int azPage::onMoveOut(int x, int y)
 {
 	if (focus_view)
 	{
 		focus_locked = false;
-		focus_view->onMoveOut(x, y);
+		focus_view->onMoveOut(x - focus_view->area.x, y - focus_view->area.y);
 		return 1;
 	}
 	return 0;
 }
 
-int azvLayout::onMoving(int x, int y, int dx, int dy)
+int azPage::onMoving(int x, int y, int dx, int dy)
 {
 	if(focus_locked&&focus_view)
-		return focus_view->onMoving(x, y, dx, dy);
+		return focus_view->onMoving(x - focus_view->area.x, y - focus_view->area.y, dx, dy);
 
-	azView*v = FindChild(x, y);
-	if (v == focus_view)
-	{
-		if (v)
+	int ret = 0;
+	for (auto p = childs.rbegin(); p != childs.rend(); p++) {
+		azView*v = *p;
+		if (v->isInArea(x, y))
 		{
-			return v->onMoving(x, y, dx, dy);
+			if (v == focus_view)
+			{
+				ret=v->onMoving(x-v->area.x, y - v->area.y, dx, dy);
+			}
+			else
+			{
+				ret = v->onMoveIn(x - v->area.x, y - v->area.y);
+				if (ret)
+				{
+					SetFocus(v,x, y);
+				}
+			}
+			if (ret)
+				return ret;
 		}
 	}
-	else
-	{
-		if (focus_view)
-			focus_view->onMoveOut(x, y);
-		focus_view = v;
-		if (v)
-		{
-			return v->onMoveIn(x , y );
-		}
-	}
+	SetFocus(nullptr, x, y);
 	return 0;
 }
 
-int azvLayout::onPress(int x, int y,Uint32 flag)
+int azPage::onPress(int x, int y,Uint32 flag)
 {
-	azView*v = FindChild(x, y);
-	focus_locked = true;
-	if (v == focus_view)
-	{
-		if (v)
+
+	int ret = 0;
+	for (auto p = childs.rbegin(); p != childs.rend(); p++) {
+		azView*v = *p;
+		if (v->isInArea(x, y))
 		{
-			return v->onPress(x , y,flag);
+
+			focus_locked = true;
+			if (v == focus_view)
+			{
+				if (v)
+				{
+					ret=v->onPress(x - v->area.x, y - v->area.y, flag);
+				}
+			}
+			else
+			{
+				if (v)
+					ret = v->onPress(x - v->area.x, y - v->area.y, flag);
+				if (ret)
+				{
+					if (focus_view)
+						focus_view->onMoveOut(x - v->area.x, y - v->area.y);
+					focus_view = v;
+				}
+			}
+			if (ret)
+				return ret;
 		}
 	}
-	else
-	{
-		if (focus_view)
-			focus_view->onMoveOut(x , y);
-		focus_view = v;
-		if (v)
-		{
-			return v->onPress(x , y,flag);
-		}
-	}
+
+	if (focus_view)
+		focus_view->onMoveOut(x - focus_view->area.x, y - focus_view->area.y);
+	focus_view = nullptr;
 	return 0;
 }
 
-int azvLayout::onRelease(int x, int y,Uint32 flag)
+int azPage::onRelease(int x, int y,Uint32 flag)
 {
-	azView*v = FindChild(x, y);
-	focus_locked = false;
-	if (v == focus_view)
-	{
-		if (v)
+	int ret = 0;
+	for (auto p = childs.rbegin(); p != childs.rend(); p++) {
+		azView*v = *p;
+		if (v->isInArea(x, y))
 		{
-			return v->onRelease(x , y , flag);
+			focus_locked = false;
+			if (v == focus_view)
+			{
+				if (v)
+				{
+					return v->onRelease(x - v->area.x, y - v->area.y, flag);
+				}
+			}
+			else
+			{
+				if (v)
+				{
+					ret = v->onRelease(x - v->area.x, y - v->area.y, flag);
+				}
+				if (ret)
+				{
+					if (focus_view)
+						focus_view->onMoveOut(x - v->area.x, y - v->area.y);
+					focus_view = v;
+				}
+			}
+			if (ret)
+				return ret;
 		}
 	}
-	else
-	{
-		if (focus_view)
-			focus_view->onMoveOut(x , y );
-		focus_view = v;
-		if (v)
-		{
-			return v->onRelease(x , y , flag);
-		}
-	}
+
+	if (focus_view)
+		focus_view->onMoveOut(x - focus_view->area.x, y - focus_view->area.y);
+	focus_view = nullptr;
 	return 0;
 }
 
-int azvLayout::onWheel(int dx, int dy)
+int azPage::onWheel(int dx, int dy)
 {
 	if (focus_view)
 	{

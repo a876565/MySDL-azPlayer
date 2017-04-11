@@ -8,6 +8,24 @@
 #define SP_COLOR_BACK 2
 #define AZDEBUGUI 0
 
+class ivec2
+{
+public:
+	union{
+		int x;
+		int w;
+	};
+	union {
+		int y;
+		int h;
+	};
+	ivec2() :x(0), y(0) {};
+	ivec2(int a) :x(a), y(a) {};
+	ivec2(int a,int b) :x(a), y(b) {};
+
+};
+
+
 class azShape
 {
 private:
@@ -65,37 +83,42 @@ protected:
 	std::vector<azView*>childs;
 	azEngine*e;
 
-public:
-
-	azShape back;
-	SDL_Rect area;
-	azView(azEngine*en) :e(en), parent(nullptr),back(en) { setSize(en->get_winrect().w, en->get_winrect().h);};
-	azView(azView*p) :e(p->e), back(p->e) { attach(p); }
-	void attach(azView*vparent){
-		if (parent) {
-			parent->rmChild(this);
-		}
-		parent = vparent;
-		parent->childs.push_back(this);
-		setSize(parent->area.w, parent->area.h);
+	void attach(azView*vparent) {
+		vparent->addChild(this);
 	}
 	void remove() {
 		if (parent)
 			parent->rmChild(this);
 	}
-	void addChild(azView*v) {
-		v->attach(this);
-	}
-	void rmChild(azView*v) { 
-		auto it = std::find(childs.begin(), childs.end(), v); 
-		if (it != childs.end())
-			childs.erase(it); 
+
+public:
+	SDL_Rect userrect;
+	azShape back;
+	SDL_Rect area;
+	azView(azEngine*en) :e(en), parent(nullptr),back(en) { setSize(en->get_winrect().w, en->get_winrect().h);};
+	azView(azView*p) :e(p->e), back(p->e) { p->addChild(this); }
+	virtual void addChild(azView*v);
+	virtual void rmChild(azView*v);
+	void clear(){
+		while (childs.size()>0)
+		{
+			auto v = childs.begin();
+			delete *v;
+		}
 	}
 
-	bool isInArea(int x, int y) {
+	inline bool isInArea(int x, int y) {
 		return (x > area.x&&x<area.x + area.w&&
 			y>area.y&&y < area.y + area.h);
 	}
+
+	azView*find_root() { azView*v = this; while (v->parent)v = v->parent; return v; };
+	void to_abs_area(SDL_Rect*r) { azView*v = this; while (v->parent) { r->x += v->area.x; r->y += v->area.y; v = v->parent; } }
+	int get_child_w() { int w = 0; for (auto &v : childs)w += v->area.w; return w; }
+	int get_child_h() { int h = 0; for (auto &v : childs)h += v->area.h; return h; }
+	
+	virtual ivec2 getSize() { return ivec2(area.w, area.h); }
+	virtual ivec2 getPos() { return ivec2(area.x, area.y); }
 	virtual int setSize(int w, int h) ;
 	virtual int setPos(int x, int y);
 	virtual int move(int dx, int dy);
@@ -109,20 +132,22 @@ public:
 	virtual int onWheel(int dx,int dy);
 
 	virtual void draw();
+	void draw_childs();
 	virtual ~azView();
 
 };
 
-class azvLayout :
+class azPage :
 	public azView
 {
 	azView*focus_view;
 	bool focus_locked;
 public :
-	azvLayout(azEngine*en) :azView(en){}
-	azvLayout(azView*v) :azView(v){};
-	~azvLayout();
+	azPage(azEngine*en) :azView(en){}
+	azPage(azView*v) :azView(v){};
+	~azPage();
 	int onEvent(SDL_Event&event);
+	void rmChild(azView*v) override;
 
 	azView* FindChild(int x, int y)
 	{
@@ -132,9 +157,11 @@ public :
 		}
 		return nullptr;
 	}
-
-	void Clear();
-
+	void SetFocus(azView*v,int outx=0,int outy=0){
+		if (focus_view)
+			focus_view->onMoveOut(outx, outy);
+		focus_view = v;
+	}
 
 	virtual void draw();
 
@@ -148,4 +175,4 @@ public :
 	virtual int onWheel(int dx, int dy) override;
 };
 
-typedef std::unique_ptr<azvLayout> pazvLayout;
+typedef std::unique_ptr<azPage> pazvLayout;

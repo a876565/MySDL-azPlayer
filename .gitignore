@@ -27,3 +27,8 @@
 *.exe
 *.out
 *.app
+
+#vs data
+*.ilk
+*.pdb
+*.tlog

@@ -37,6 +37,14 @@ int azvButtonBase::onRelease(int x, int y, Uint32 flag)
 	return 1;
 }
 
+int azvButton::setSize(int w, int h)
+{
+	area.w = w;
+	area.h = h;
+	text.setSize(w, h);
+	return 0;
+}
+
 void azvButton::draw()
 {
 	if (past_tick > 0)

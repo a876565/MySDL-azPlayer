@@ -32,4 +32,5 @@ public:
 
 	virtual int onRelease(int x, int y, Uint32 flag) override;
 
+	virtual int setSize(int w, int h) override;
 };

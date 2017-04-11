@@ -4,7 +4,7 @@
 #include <functional>
 
 static SDL_Color DefHoverColor = COLOR(0x77, 0x77, 0xff, 0xb0);
-static SDL_Color DefSelectColor = COLOR(0x77, 0x77, 0xff, 0xb0);
+static SDL_Color DefSelectColor = COLOR(0x77, 0x77, 0xff, 0xff);
 class azvList :
 	public azView
 {
@@ -32,7 +32,7 @@ public:
 		hover_color(DefHoverColor),
 		select_color(DefSelectColor)
 	{
-		back.color = COLOR(0x55, 0xdd, 0xff, 0x63);
+		back.color = COLOR(0xdd, 0xdd, 0xdd, 0x63);
 		back.border = COLOR_NONE;
 		title_back.color = COLOR(0x55, 0xdd, 0xff, 0xc0);
 	};
@@ -41,7 +41,7 @@ public:
 
 struct ListItem
 {
-	int h;
+	int iw,w,h;
 	azText*text;
 	azTexture icon;
 };
@@ -55,14 +55,19 @@ public:
 	azvListbox(azView*p) :azvList(p){};
 
 	virtual void draw() override;
-	virtual int SlideList(int dist) override;
+	virtual int setSize(int w, int h) override;
 
+	virtual int SlideList(int dist) override;
 	virtual int FindItem(int mx, int my) override;
 
 	int InsertText(const std::wstring&str,SDL_Color color=COLOR_WHITE);
 	int SetItemText(size_t index,const std::wstring&str);
 	int SetItemColor(size_t index, SDL_Color color);
 	int SetItemIcon(size_t index,azTexture&tex);
+	unsigned getItemNum() { return items.size(); }
+	int getSelItem() { return select_item; }
+	void setSelItem(unsigned i) { if (i < items.size())select_item = i; }
+	void unSelect() { select_item = -1; }
 
 	const std::wstring& GetItemText(size_t index);
 	SDL_Color GetItemColor(size_t index);
@@ -74,7 +79,7 @@ public:
 			allheight += t.h;
 		return allheight;
 	}
-
+	void chkHeight(ListItem&it);
 	int DelItem(size_t index);
 	int Clear();
 	~azvListbox();
