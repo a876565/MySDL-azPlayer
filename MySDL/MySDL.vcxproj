@@ -170,7 +170,7 @@
     <ClCompile Include="device.cpp" />
     <ClCompile Include="DmMgr.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="azPlayer.cpp" />
+    <ClCompile Include="MyPlayer.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -195,7 +195,8 @@
     <ClInclude Include="azWindow.h" />
     <ClInclude Include="device.h" />
     <ClInclude Include="DmMgr.h" />
-    <ClInclude Include="azPlayer.h" />
+    <ClInclude Include="MyPlayer.h" />
+    <ClInclude Include="ProgramOptions.h" />
     <ClInclude Include="RefObject.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="tinyxml2.h" />

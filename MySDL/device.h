@@ -38,9 +38,11 @@
 #define COLOR_INIT(c) (c).r=(c).g=(c).b=(c).a=255;
 #define COLOR_SET(c,r,g,b,a) (c).r=r,(c).g=g,(c).b=b,(c).a=a;
 
-#define SONG_FILE_NAME "song.xml"
+
 #define DEFAULT_FONT_NAME "simhei.ttf"
 #define DEFAULT_FONT_SIZE 24
+
+std::string getDataPath(const std::string&name);
 
 template<class FileStream>
 inline void  skip_utf8_bom(FileStream&f)
@@ -71,17 +73,6 @@ inline bool isPointInRect(int x,int y, const SDL_Rect &r)
 	return ((x > r.x) && (x < (r.x + r.w)) &&
 		(y > r.y) && (y < (r.y + r.h))) ? true : false;
 }
-inline int is_azerr(const char *s)
-{
-	if(s[0]>='0'&&s[0]<='9'&&s[1] >= '0'&&s[1] <= '9')
-	{ 
-		return (s[0] - '0') * 10 + (s[1] - '0');
-	}
-	else
-	{
-		return -1;
-	}
-}
 
 
 size_t cstows(std::wstring&ws, const char *pc);
@@ -95,8 +86,6 @@ size_t wstou8s(std::string&cs, const wchar_t * pw);
 #define STRTOUTF8(s) {std::wstring ws;cstows(ws,s.c_str());wstou8s(s,ws.c_str());}
 #define DIR_SEP '\\'
 #define DIR_SEPS "\\"
-
-
 
 inline size_t u8stocs(std::string & cs, const char * u8s)
 {

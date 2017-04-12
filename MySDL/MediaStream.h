@@ -13,6 +13,7 @@ extern "C"{
 enum {
 	MEDIA_EVENT_FINISH=SDL_USEREVENT
 };
+
 const int  SDL_TIME_BASE=1000;
 const  AVRational SDL_TIME_BASE_Q = { 1, SDL_TIME_BASE };
 
@@ -72,7 +73,7 @@ enum DECODER_STATE {
 	DECODER_STOP
 };
 enum {
-	MEDIA_UNTREADY,
+	MEDIA_NOTREADY,
 	MEDIA_STOP,
 	MEDIA_FINISH,
 	MEDIA_PLAYING,
@@ -127,36 +128,37 @@ class MediaStream
 	SDL_Renderer*render;//渲染器视频播放器用
 	SDL_Texture*texture;
 
-	Uint32 start_tick;
 	int64_t play_pos;//现在播放的位置
 	int play_state;
 
 	int volume;
 
 	SDL_Rect area;
-	CDmMgr DmMgr;
 
 	void AudioCallBack(Uint8*stream, int len);
 	static void __cdecl AudioCallBack0(void*userdata,Uint8*stream, int len);
 	static int __cdecl DecodeThread0(void*data);
+
+	void SetAudio();
+	void SetVideo();
+	static void CloseStream(AStream&s);
+
+
+	void ReadFrame();
+	void demux();
+	void decodeAudio(AVPacket*pkt, AVFrame*frame);
+	void decodeVideo(AVPacket*pkt);
 public:
 	static void initav();
-	void init();
 	int initAudio(int freq = 44100, int channels = 2, int samples = 1024);
 	int deinitAudio();
 
 	void OpenFile(const std::string& filename);
 	void CloseFile();
-	void SetAudio();
-	void SetVideo();
-	static void CloseStream(AStream&s);
 
 	void StartDecode();
 	void EndDecoder();
-	void ReadFrame();
-	void demux();
-	void decodeAudio(AVPacket*pkt, AVFrame*frame);
-	void decodeVideo(AVPacket*pkt);
+
 	void getVideoSize(int *w, int *h);
 	void setRenderer(SDL_Renderer*ren) { render = ren; if (!render&&texture)SDL_DestroyTexture(texture); };
 	//注意：decode中更改会导致错误，必须先停止
@@ -174,23 +176,14 @@ public:
 	void setVolume(int vol) { if (vol >= 0 && vol <= 128)volume = vol; }
 	int getVolume() { return volume; }
 	int getState() { return SDL_GetAudioDeviceStatus(dev); }
-	unsigned getPosition(){
-		if (!audio.Stream)
-			return 0;
-	double pos = play_pos*av_q2d(audio.Stream->time_base);
-	return (unsigned)(pos * 1000);
-	}
+
+	unsigned getPosTicks();
+	unsigned getDurTicks();
+	double getPosition();
+	double getDuration();
 
 	bool isReady() { return NULL!=audio.CodecCtx; }
-	unsigned GetDuration();
-	const char*GetMetaData(const char*key) {
-		if (AvFmtCtx)
-		{
-			AVDictionaryEntry*t = av_dict_get(AvFmtCtx->metadata, key, NULL, 0);
-			return t ? t->value : NULL;
-		}
-		return NULL;
-	}
+	const char*GetMetaData(const char*key);
 	MediaStream();
 	~MediaStream();
 };

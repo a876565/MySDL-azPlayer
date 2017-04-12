@@ -84,7 +84,7 @@
     <ClCompile Include="MediaStream.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="azPlayer.cpp">
+    <ClCompile Include="MyPlayer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -161,7 +161,10 @@
     <ClInclude Include="MediaStream.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="azPlayer.h">
+    <ClInclude Include="ProgramOptions.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MyPlayer.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

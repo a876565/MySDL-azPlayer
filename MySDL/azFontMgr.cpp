@@ -2,11 +2,11 @@
 #include "azFontMgr.h"
 
 
-int azCFontMgr::LoadFont(const std::string str,int ftsize)
+int azCFontMgr::LoadFont(const std::string& str,int ftsize)
 {
 	if (font)
 		CloseFont();
-	font = TTF_OpenFont(str.c_str(), ftsize);
+	font = TTF_OpenFont(getDataPath(str).c_str(), ftsize);
 	if (!font)
 	{
 		DBGLOGEX(Error, "TTF_OpenFont:%s(%s)", str.c_str(), SDL_GetError());
@@ -44,6 +44,11 @@ int azCFontMgr::GetTexChar(TEXCHAR & tch)
 {
 	static int num = 1;
 	auto it = TexChs.find(tch.ch);
+	if (!font)
+	{
+		DBGLOGEX(Error, "Font is not loaded.");
+		return -1;
+	}
 	if (it != TexChs.end())
 	{
 		tch.loc = (*it).second.loc;

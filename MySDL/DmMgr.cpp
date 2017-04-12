@@ -33,6 +33,9 @@ void CDmMgr::addDm(const char * param, const char * str)
 {
 	if (!param || !str)
 		return;
+
+	if (*param == 0 || *str == 0)
+		return;
 	string s(param), sTime, sType, sSize, sColor;
 	int p, q;
 	DmItem dm;
@@ -55,7 +58,12 @@ void CDmMgr::init()
 	eng = azEngine::getSingleton();
 	Area = eng->get_winrect();
 	Area.x = Area.y = 0;
-	speed = Area.w / 6;
+
+	float hdpi = 0.0f;
+	eng->GetDisplayDPI(nullptr, &hdpi);
+	speed = hdpi*2;
+	if (speed <= 0)
+		speed = 128;
 	exist_time = 6.0;
 }
 
@@ -73,22 +81,57 @@ void CDmMgr::Open(tinyxml2::XMLDocument * doc)
 		}
 		ele = ele->NextSiblingElement();
 	}
+	delete doc;
 }
 
 void CDmMgr::OpenFile(const std::string & path)
 {
 	XMLDocument *doc = new XMLDocument();
-	doc->LoadFile(path.c_str());
-	Open(doc);
+	if (doc->LoadFile(path.c_str()) == tinyxml2::XML_SUCCESS)
+	{
+		DBGLOG("Open danmu:%s", path.c_str());
+		Open(doc);
+	}
+	else
+	{
+		DBGLOG("Failed open danmu:%s", path.c_str());
+	}
 }
-
-void CDmMgr::setArea(SDL_Rect * r)
+#define SETAREA(list) for (auto i : list)\
+{\
+	i->r.x = i->r.x*r->w / Area.w;\
+	i->r.y = i->r.y*r->h / Area.h;\
+}
+void CDmMgr::setArea(const SDL_Rect * r)
 {
+	for (auto i : flying)
+	{
+	}
+	for (auto i : bottom)
+	{
+		i->r.x = r->x+(r->w - i->r.w) / 2;
+		i->r.y += r->y+r->h -Area.y- Area.h;
+	}
+	for (auto i : top)
+	{
+		i->r.x = r->x+(r->w - i->r.w) / 2;
+	}
 	Area = *r;
 }
 
 void CDmMgr::Close()
 {
+	for (auto i : dms)
+	{
+		if (i.second.text)
+			delete(i.second.text);
+	}
+	dms.clear();
+	flying.clear();
+	top.clear();
+	bottom.clear();
+
+	time = 0.0;
 }
 void CDmMgr::topLayout(DmItem&i, std::list<DmItem*>&list)
 {
@@ -185,6 +228,15 @@ void CDmMgr::flyingLayout(DmItem & i, std::list<DmItem*>& list)
 }
 void CDmMgr::pass(double to_time)
 {
+	if (to_time < time)
+	{
+		clearDm();
+		if(to_time>=0.0)
+			time = to_time;
+		else 
+			time = 0.0;
+		return;
+	}
 	int past = speed*(to_time - time);
 	for (auto i = flying.begin(); i != flying.end();)
 	{
@@ -225,15 +277,13 @@ void CDmMgr::pass(double to_time)
 			break;
 		case 2:
 			i->second.r.x = Area.x + (Area.w - i->second.r.w) / 2;
-			i->second.r.y = Area.y - i->second.r.h;
+			i->second.r.y = Area.y +Area.h- i->second.r.h;
 			bottomLayout(i->second, bottom);
-			bottom.push_back(&i->second);
 			break;
 		case 3:
 			i->second.r.x = Area.x + (Area.w - i->second.r.w) / 2;
 			i->second.r.y = Area.y;
 			topLayout(i->second, top);
-			top.push_back(&i->second);
 			break;
 		default:
 			break;
@@ -255,9 +305,15 @@ void CDmMgr::renderDm(const std::list<DmItem*>& list)
 	for (auto i : list)
 	{
 		i->text->draw(i->r.x, i->r.y);
-		eng->SetColor(COLOR_RED);
-		eng->DrawRect(&i->r);
 	}
+}
+
+#define CLEARDM(list) for(auto i:list){if(i->text)delete i->text;i->text=nullptr;}list.clear();
+void CDmMgr::clearDm()
+{
+	CLEARDM(flying);
+	CLEARDM(top);
+	CLEARDM(bottom);
 }
 
 void CDmMgr::jump(double t)

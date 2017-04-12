@@ -123,6 +123,14 @@ azTexture azEngine::LoadTexture(const std::string&name)
 		return azTexture(new azCTexture(pTex, m_renderer));
 	}
 }
+float azEngine::GetDisplayDPI(float * ddpi, float * hdpi, float * vdpi)
+{
+	float d = 0.0f;
+	SDL_GetDisplayDPI(SDL_GetWindowDisplayIndex(m_window), &d, hdpi, vdpi);
+	if (ddpi)
+		*ddpi = d;
+	return d;
+}
 void azEngine::set_winrect(const SDL_Rect & rect)
 {
 	SET_RECT(x, DEFAULT_WIN_X);

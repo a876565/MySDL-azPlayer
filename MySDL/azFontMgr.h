@@ -30,7 +30,7 @@ class azCFontMgr
 	std::map<wchar_t, TEXCHAR>TexChs;
 public:
 	azCFontMgr(azEngine*en) :font(nullptr),e(en) {};
-	int LoadFont(const std::string str, int ftsize);
+	int LoadFont(const std::string& str, int ftsize);
 	void CloseFont();
 	int NewTexMap();
 	int GetTexChar(TEXCHAR&tch);

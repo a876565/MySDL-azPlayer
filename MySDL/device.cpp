@@ -1,5 +1,26 @@
 #include "device.h"
 #include <assert.h>
+#include <io.h>
+std::string MyPath;
+
+std::string getDataPath(const std::string & name)
+{
+	if (_access(name.c_str(), 4) != -1)
+	{
+		DBGLOG("Data file:'%s'='%s'", name.c_str(), name.c_str());
+		return name;
+	}
+	else {
+		std::string s = MyPath + name;
+		if (_access(s.c_str(), 4) != -1)
+		{
+			DBGLOG("Data file:'%s'='%s'", name.c_str(), s.c_str());
+			return s;
+		}
+	}
+	DBGLOG("Warning : Data file \"%s\" not found.", name.c_str());
+	return std::string();
+}
 size_t cstows(std::wstring&ws, const char *pc)
 {
 

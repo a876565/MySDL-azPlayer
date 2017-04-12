@@ -1,9 +1,10 @@
-#include "AudioStream.h"
+#include "MediaStream.h"
 #define SAFE_FREE(p,f) if(p)f(p);p=nullptr;
 //!!warning:not prepared for multi-thread
 
-#undef DBGLOGEX
-#define DBGLOGEX(a,...) DBGLOG(__VA_ARGS__)
+
+
+
 Uint32 AvPixFmtToSDL(AVPixelFormat fmt)
 {
 	switch (fmt)
@@ -53,6 +54,8 @@ static void d_print_audio(SDL_AudioDeviceID dev)
 	);*/
 }
 
+
+bool av_initialized = false;
 void MediaStream::initav()
 {
 	av_register_all();
@@ -60,10 +63,6 @@ void MediaStream::initav()
 	avformat_network_init();
 }
 
-void MediaStream::init()
-{
-	DmMgr.init();
-}
 
 int MediaStream::initAudio(int freq, int channels, int samples)
 {
@@ -110,6 +109,10 @@ void MediaStream::OpenFile(const std::string& url)
 {
 	int ret;
 	CloseFile();
+
+	if (!av_initialized)
+		initav();
+
 	play_pos = 0;
 	AvFmtCtx = avformat_alloc_context();
 	//Open  
@@ -149,8 +152,7 @@ void MediaStream::OpenFile(const std::string& url)
 		SDL_SetError("Didn't find a audio stream.");
 		return;
 	}
-	auto p=url.rfind('.');
-	DmMgr.OpenFile(url.substr(0, p) + ".xml");
+
 	StartDecode();
 }
 
@@ -504,15 +506,13 @@ void MediaStream::update()
 
 void MediaStream::draw()
 {
-	SDL_RenderCopy(render, texture, NULL, NULL);
-	DmMgr.pass(play_pos*av_q2d(audio.Stream->time_base));
-	//DmMgr.pass((double)(SDL_GetTicks()-start_tick)/1000);
+	if(texture&&render)
+		SDL_RenderCopy(render, texture, NULL, NULL);
 }
 
 void MediaStream::setDrawArea(SDL_Rect * r)
 {
 	area = *r;
-	DmMgr.setArea(r);
 }
 
 void MediaStream::ClearQueue()
@@ -537,7 +537,6 @@ void MediaStream::play()
 		StartDecode();
 	SDL_PauseAudioDevice(dev, 0);
 	play_state = MEDIA_PLAYING;
-	start_tick = SDL_GetTicks();
 }
 
 void MediaStream::pause(int p) 
@@ -556,18 +555,40 @@ void MediaStream::stop()
 void MediaStream::setPostion(int tick)
 {
 	SDL_LockMutex(AvMutex);
+	SDL_LockMutex(video_mu);
+	SDL_LockMutex(audioDecoder.mutex);
+	ClearQueue();
 	int64_t t = av_rescale_q(tick, SDL_TIME_BASE_Q, audio.Stream->time_base);
 	av_seek_frame(AvFmtCtx, audio.index, t, AVSEEK_FLAG_BACKWARD);
 	SDL_UnlockMutex(AvMutex);
+	SDL_UnlockMutex(video_mu);
+	SDL_UnlockMutex(audioDecoder.mutex);
 }
 
-unsigned MediaStream::GetDuration()
+unsigned MediaStream::getPosTicks() 
+{
+	
+	return (unsigned)(getPosition() * 1000);
+}
+
+unsigned MediaStream::getDurTicks()
+{
+	
+	return (unsigned)(getDuration() * 1000);
+}
+
+double MediaStream::getPosition()
 {
 	if (!audio.Stream)
 		return 0;
-	double dur = audio.Stream->duration*
-		av_q2d(audio.Stream->time_base);
-	return (unsigned)(dur * 1000);
+	return play_pos*av_q2d(audio.Stream->time_base);
+}
+
+double MediaStream::getDuration()
+{
+	if (!audio.Stream)
+		return 0;
+	return audio.Stream->duration*av_q2d(audio.Stream->time_base);
 }
 
 void MediaStream::AudioCallBack(Uint8 * stream, int size)
@@ -619,6 +640,15 @@ int MediaStream::DecodeThread0(void * data)
 {
 	((MediaStream*)data)->ReadFrame();
 	return 0;
+}
+
+const char * MediaStream::GetMetaData(const char * key) {
+	if (AvFmtCtx)
+	{
+		AVDictionaryEntry*t = av_dict_get(AvFmtCtx->metadata, key, NULL, 0);
+		return t ? t->value : NULL;
+	}
+	return NULL;
 }
 
 MediaStream::MediaStream() :AvFmtCtx(NULL), low_frame_num(8),

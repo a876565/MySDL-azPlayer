@@ -11,10 +11,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LocalDebuggerWorkingDirectory>..\bin</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>"D:\ShiWeiang\BILIBILI\4429419\1\4429419_1_0.mp4"</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>"D:\ShiWeiang\BILIBILI\4436461\1\4436461_1_0.mp4" </LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LocalDebuggerWorkingDirectory>..\bin</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments>"D:\ShiWeiang\BILIBILI\4436461\1\4436461_1_0.mp4"</LocalDebuggerCommandArguments>
   </PropertyGroup>
 </Project>

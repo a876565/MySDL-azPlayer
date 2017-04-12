@@ -86,6 +86,7 @@ public:
 		return azTexture();
 	}
 	SDL_Renderer *getRenderer() { return m_renderer; }
+	float GetDisplayDPI(float * ddpi = nullptr, float * hdpi = nullptr, float * vdpi = nullptr);
 
 	inline int SetColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a) { return SDL_SetRenderDrawColor(m_renderer, r, g, b, a); }
 	inline int SetColor(SDL_Color color) { return SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a); }

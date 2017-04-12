@@ -149,7 +149,7 @@ void azText::updateLayout()
 
 		x += tc.dst.w;
 	}
-	if (real_w == 0)
+	if (real_w == 0&&!tchs.empty())
 		real_w = x + tchs.back().dst.w;
 	real_h=y + hwrap;
 }

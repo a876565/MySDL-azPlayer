@@ -34,10 +34,11 @@ public:
 	void  topLayout(DmItem & i, std::list<DmItem*>& list);
 	void  bottomLayout(DmItem & i,std::list<DmItem*>& list);
 	void flyingLayout(DmItem & i, std::list<DmItem*>& list);
-	void setArea(SDL_Rect *r);
+	void setArea(const SDL_Rect * r);
 	void pass(double to_time);
 	void updateDm();
 	void renderDm(const std::list<DmItem*>& list);
+	void clearDm();
 	void jump(double t);
 	CDmMgr();
 	~CDmMgr();

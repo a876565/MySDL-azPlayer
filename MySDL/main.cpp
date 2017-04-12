@@ -4,9 +4,7 @@
 #include <string>
 #include <stdio.h>
 #include <sstream>
-#include "MyMusic.h"
-#include "AudioStream.h"
-
+#include "MyPlayer.h"
 int ArgCount; 
 char **Args;
 
@@ -29,37 +27,24 @@ void printrenflag(Uint32 flag)
 #undef main
 #endif
 
-#define TestAudioStream 0
-void TestAudio()
+extern std::string MyPath;
+void setupPath(const char*self)
 {
-	MediaStream a;
-	SDL_Window*win = SDL_CreateWindow("TestAudioStream", 32, 32, 640, 640, 0);
-	SDL_Event event;
-	a.initAudio();
-	a.OpenFile("test.mp3");
-	//a.OpenFile("C:\\Users\\swa\\Videos\\Parakit & Alden Jacob - Save Me.mp4");
-	a.play();
-	while (SDL_WaitEvent(&event)>0)
+	MyPath = self;
+	size_t pos = MyPath.rfind(DIR_SEP);
+	if (pos != std::string::npos)
 	{
-		if (event.type == SDL_QUIT)
-			break;
+		MyPath.erase(pos);
+		MyPath.append(DIR_SEPS);
 	}
-	a.deinitAudio();
-	a.CloseFile();
-	SDL_DestroyWindow(win);
-
 }
 int main(int argc, char **argv)
 {
 	azEngine::InitLibs();
-	MediaStream::initav();
 	ArgCount = argc;
 	Args = argv;
-#if TestAudioStream
-	TestAudio();
-	return 0;
-#endif
-	MyMusic mApp;
+	setupPath(argv[0]);
+	MyPlayer mApp;
 	mApp.run();
 	azEngine::DeinitLibs();
 	return 0;
